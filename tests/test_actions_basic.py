@@ -114,3 +114,29 @@ def test_resolve_bbox_clamps_to_screen():
 def test_resolve_bbox_rejects_invalid():
     with pytest.raises(ValueError):
         screen._resolve_bbox({"left": 0, "top": 0, "width": 0, "height": 10}, 1920, 1080)
+
+
+def test_read_clipboard_truncates(monkeypatch):
+    import actions.system as sysmod
+
+    fake = type("F", (), {"paste": staticmethod(lambda: "x" * 50)})
+    monkeypatch.setitem(__import__("sys").modules, "pyperclip", fake)
+    out = sysmod.read_clipboard(max_chars=10)
+    assert out["available"] is True
+    assert out["length"] == 50
+    assert out["truncated"] is True
+    assert out["text"] == "x" * 10
+
+
+def test_read_clipboard_handles_missing_backend(monkeypatch):
+    import actions.system as sysmod
+
+    class BoomPyperclip:
+        @staticmethod
+        def paste():
+            raise RuntimeError("no display")
+
+    monkeypatch.setitem(__import__("sys").modules, "pyperclip", BoomPyperclip)
+    out = sysmod.read_clipboard()
+    assert out["available"] is False
+    assert "no display" in out["reason"]

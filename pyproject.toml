@@ -32,6 +32,7 @@ dependencies = [
     "mss>=9.0.1,<11",
     "pyautogui>=0.9.54,<1",
     "pytesseract>=0.3.10,<1",
+    "pyperclip>=1.8.2,<2",
 ]
 
 [project.optional-dependencies]
@@ -67,6 +68,7 @@ automa-validate = "scripts.validate_project:main"
 "vision.select_image" = "actions.vision:select_image"
 "vision.inspect_screen_target" = "actions.vision:inspect_screen_target"
 "system.wait_seconds" = "actions.system:wait_seconds"
+"system.read_clipboard" = "actions.system:read_clipboard"
 "system.snapshot_system" = "actions.system:snapshot_system"
 "system.top_processes" = "actions.system:top_processes"
 "system.watch_processes" = "actions.system:watch_processes"

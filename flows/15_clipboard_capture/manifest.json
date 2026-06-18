@@ -1,0 +1,28 @@
+{
+  "id": "clipboard_capture",
+  "name": "Captura del portapapeles a JSON",
+  "family": "sistema",
+  "description": "Un clic = snapshot del contenido del portapapeles guardado a JSON con timestamp. Lee el texto actual del clipboard de Windows vía pyperclip y lo persiste con metadata (longitud, truncado, disponibilidad del backend). Útil para auditoría (qué se copió antes de pegarlo en X), evidencia forense liviana, o como primitiva para flows que necesitan procesar texto que el usuario tiene listo en memoria.",
+  "allowed_actions": ["system.read_clipboard", "filesystem.write_json"],
+  "allowed_paths": ["output/reports"],
+  "max_runtime_seconds": 5,
+  "steps": [
+    {
+      "id": "read_clipboard",
+      "action": "system.read_clipboard",
+      "params": {
+        "max_chars": "{{ max_chars }}"
+      },
+      "save_as": "clip"
+    },
+    {
+      "id": "save_clipboard",
+      "action": "filesystem.write_json",
+      "params": {
+        "path": "output/reports/clipboard_{now}.json",
+        "data": "{{ clip }}"
+      },
+      "save_as": "report"
+    }
+  ]
+}

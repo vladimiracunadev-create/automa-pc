@@ -82,6 +82,7 @@ _BUILT_IN_ACTIONS: dict[str, str] = {
     'vision.select_image': 'actions.vision:select_image',
     'vision.inspect_screen_target': 'actions.vision:inspect_screen_target',
     'system.wait_seconds': 'actions.system:wait_seconds',
+    'system.read_clipboard': 'actions.system:read_clipboard',
     'system.snapshot_system': 'actions.system:snapshot_system',
     'system.top_processes': 'actions.system:top_processes',
     'system.watch_processes': 'actions.system:watch_processes',

@@ -71,3 +71,29 @@ def watch_processes(processes: list[dict[str, Any]], memory_mb_threshold: float 
             "cpu_percent_threshold": cpu_percent_threshold,
         },
     }
+
+def read_clipboard(max_chars: int = 10000) -> dict[str, Any]:
+    """Lee el texto actual del portapapeles del sistema.
+
+    Trunca a ``max_chars`` para evitar volcar volumenes grandes a logs/JSON.
+    Devuelve siempre un payload con ``available: bool`` — si no hay backend
+    de portapapeles (servidor headless, sesion SSH sin DISPLAY), retorna
+    available=False con ``reason`` legible, en vez de tirar excepcion.
+    """
+    try:
+        import pyperclip
+    except Exception as exc:
+        return {"available": False, "reason": f"pyperclip no instalado: {exc}", "text": "", "length": 0, "truncated": False}
+    try:
+        raw = pyperclip.paste()
+    except Exception as exc:
+        return {"available": False, "reason": f"backend de portapapeles no disponible: {exc}", "text": "", "length": 0, "truncated": False}
+    if raw is None:
+        raw = ""
+    text = str(raw)
+    length = len(text)
+    truncated = length > max_chars
+    if truncated:
+        text = text[:max_chars]
+    return {"available": True, "text": text, "length": length, "truncated": truncated, "max_chars": max_chars}
+
