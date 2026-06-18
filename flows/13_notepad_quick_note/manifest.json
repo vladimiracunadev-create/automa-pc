@@ -1,0 +1,35 @@
+{
+  "id": "notepad_quick_note",
+  "name": "Nota rápida en Notepad",
+  "family": "sistema",
+  "description": "Un clic = abre Notepad y deja una nota tipeada con timestamp. Útil para dejar recordatorios visibles, anotar el estado de una tarea o tener un scratchpad volátil. La nota se elige por contexto. Soporta dry_run para validar el wiring sin abrir Notepad.",
+  "allowed_actions": ["ui.launch_process", "system.wait_seconds", "ui.type_text"],
+  "max_runtime_seconds": 15,
+  "steps": [
+    {
+      "id": "launch_notepad",
+      "action": "ui.launch_process",
+      "params": {
+        "command": "notepad.exe",
+        "wait_seconds": 0.0,
+        "dry_run": "{{ dry_run }}"
+      },
+      "save_as": "launch_result"
+    },
+    {
+      "id": "wait_notepad_ready",
+      "action": "system.wait_seconds",
+      "params": {"seconds": 1.0},
+      "save_as": "wait_result"
+    },
+    {
+      "id": "type_note",
+      "action": "ui.type_text",
+      "params": {
+        "text": "{{ note }}",
+        "dry_run": "{{ dry_run }}"
+      },
+      "save_as": "type_result"
+    }
+  ]
+}
