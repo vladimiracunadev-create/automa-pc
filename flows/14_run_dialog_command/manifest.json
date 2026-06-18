@@ -1,0 +1,43 @@
+{
+  "id": "run_dialog_command",
+  "name": "Ejecutar comando vía diálogo Ejecutar (Win+R)",
+  "family": "sistema",
+  "description": "Un clic = abre el diálogo Ejecutar de Windows (Win+R), tipea un comando configurable y lo ejecuta con Enter. Atajo universal para lanzar cualquier programa, URL o ruta sin tocar el menú Inicio. El comando es parametrizable por contexto. Soporta dry_run para validar el wiring sin abrir el diálogo.",
+  "allowed_actions": ["ui.hotkey", "system.wait_seconds", "ui.type_text"],
+  "max_runtime_seconds": 10,
+  "steps": [
+    {
+      "id": "open_run_dialog",
+      "action": "ui.hotkey",
+      "params": {
+        "keys": ["win", "r"],
+        "dry_run": "{{ dry_run }}"
+      },
+      "save_as": "open_result"
+    },
+    {
+      "id": "wait_dialog",
+      "action": "system.wait_seconds",
+      "params": {"seconds": 0.4},
+      "save_as": "wait_result"
+    },
+    {
+      "id": "type_command",
+      "action": "ui.type_text",
+      "params": {
+        "text": "{{ command }}",
+        "dry_run": "{{ dry_run }}"
+      },
+      "save_as": "type_result"
+    },
+    {
+      "id": "submit_command",
+      "action": "ui.hotkey",
+      "params": {
+        "keys": ["enter"],
+        "dry_run": "{{ dry_run }}"
+      },
+      "save_as": "submit_result"
+    }
+  ]
+}
