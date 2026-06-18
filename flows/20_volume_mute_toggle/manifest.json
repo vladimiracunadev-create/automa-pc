@@ -1,0 +1,19 @@
+{
+  "id": "volume_mute_toggle",
+  "name": "Mutear/desmutear audio del sistema",
+  "family": "sistema",
+  "description": "Un clic = togglea el mute del audio maestro de Windows. Envía la tecla multimedia 'volumemute' al sistema — equivalente a apretar la tecla de mute del teclado. Si está sonando algo, lo silencia; si está muteado, lo reactiva. Útil para reuniones imprevistas, kioskos en horario silencioso, automatización por cron. Soporta dry_run.",
+  "allowed_actions": ["ui.hotkey"],
+  "max_runtime_seconds": 3,
+  "steps": [
+    {
+      "id": "send_mute_key",
+      "action": "ui.hotkey",
+      "params": {
+        "keys": ["volumemute"],
+        "dry_run": "{{ dry_run }}"
+      },
+      "save_as": "mute_result"
+    }
+  ]
+}
