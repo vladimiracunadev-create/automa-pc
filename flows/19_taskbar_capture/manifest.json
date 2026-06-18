@@ -1,0 +1,25 @@
+{
+  "id": "taskbar_capture",
+  "name": "Captura de la barra de tareas",
+  "family": "pantalla",
+  "description": "Un clic = PNG con la franja inferior del escritorio (barra de tareas + system tray). Captura una región anclada al borde inferior del monitor principal usando coordenadas relativas — sirve para auditar qué íconos están pinneados, qué notificaciones hay activas, o qué apps tienen badge sin tener que capturar la pantalla completa. La altura del recorte es configurable.",
+  "allowed_actions": ["screen.capture_region"],
+  "allowed_paths": ["output/screenshots"],
+  "max_runtime_seconds": 10,
+  "steps": [
+    {
+      "id": "capture_taskbar",
+      "action": "screen.capture_region",
+      "params": {
+        "output_path": "output/screenshots/taskbar_{now}.png",
+        "bbox": {
+          "left": 0,
+          "top": -48,
+          "width": 99999,
+          "height": 48
+        }
+      },
+      "save_as": "shot"
+    }
+  ]
+}

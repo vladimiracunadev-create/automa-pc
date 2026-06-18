@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from actions import filesystem, rules, system, ui
+from actions import filesystem, rules, screen, system, ui
 
 
 def test_ensure_directory_creates(tmp_path):
@@ -91,3 +91,26 @@ def test_ui_click_dry_run():
 def test_ui_click_bbox_centers():
     out = ui.click_bbox({"left": 0, "top": 0, "width": 100, "height": 50}, dry_run=True)
     assert out["x"] == 50 and out["y"] == 25
+
+
+def test_resolve_bbox_absolute():
+    assert screen._resolve_bbox({"left": 10, "top": 20, "width": 100, "height": 50}, 1920, 1080) == (10, 20, 100, 50)
+
+
+def test_resolve_bbox_negative_anchors_to_opposite_edge():
+    # top=-48 sobre monitor 1080 → top=1032
+    assert screen._resolve_bbox({"left": 0, "top": -48, "width": 1920, "height": 48}, 1920, 1080) == (0, 1032, 1920, 48)
+
+
+def test_resolve_bbox_right_bottom_form():
+    assert screen._resolve_bbox({"left": 100, "top": 50, "right": 300, "bottom": 200}, 1920, 1080) == (100, 50, 200, 150)
+
+
+def test_resolve_bbox_clamps_to_screen():
+    # width 99999 sobre monitor 1920 → 1920
+    assert screen._resolve_bbox({"left": 0, "top": 0, "width": 99999, "height": 99999}, 1920, 1080) == (0, 0, 1920, 1080)
+
+
+def test_resolve_bbox_rejects_invalid():
+    with pytest.raises(ValueError):
+        screen._resolve_bbox({"left": 0, "top": 0, "width": 0, "height": 10}, 1920, 1080)

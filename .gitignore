@@ -21,3 +21,6 @@ secrets/*.json
 !secrets/.gitkeep
 .tmp*
 data/seeds/.used_indices.json
+
+# Claude Code local worktrees y caches
+.claude/

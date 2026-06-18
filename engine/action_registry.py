@@ -75,6 +75,7 @@ _BUILT_IN_ACTIONS: dict[str, str] = {
     'filesystem.summarize_text_folder': 'actions.filesystem:summarize_text_folder',
     'filesystem.move_file': 'actions.filesystem:move_file',
     'screen.capture_screenshot': 'actions.screen:capture_screenshot',
+    'screen.capture_region': 'actions.screen:capture_region',
     'vision.analyze_image': 'actions.vision:analyze_image',
     'vision.ocr_image': 'actions.vision:ocr_image',
     'vision.find_text_in_image': 'actions.vision:find_text_in_image',
