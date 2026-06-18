@@ -1,0 +1,54 @@
+{
+  "id": "taskmgr_snapshot",
+  "name": "Snapshot del Task Manager",
+  "family": "pantalla",
+  "description": "Un clic = Task Manager abierto + captura PNG + OCR de procesos visibles. Lanza el atajo nativo Ctrl+Shift+Esc, espera a que la ventana se renderice, captura el escritorio y pasa la imagen por OCR para extraer los nombres de procesos visibles a JSON. Útil como auditoría puntual de qué hay corriendo en este momento, sin depender de tasklist/psutil ni dejar archivos extra.",
+  "allowed_actions": ["ui.hotkey", "system.wait_seconds", "screen.capture_screenshot", "vision.ocr_image", "filesystem.write_json"],
+  "allowed_paths": ["output/screenshots", "output/reports"],
+  "max_runtime_seconds": 30,
+  "steps": [
+    {
+      "id": "open_taskmgr",
+      "action": "ui.hotkey",
+      "params": {
+        "keys": ["ctrl", "shift", "esc"],
+        "dry_run": "{{ dry_run }}"
+      },
+      "save_as": "open_result"
+    },
+    {
+      "id": "wait_render",
+      "action": "system.wait_seconds",
+      "params": {"seconds": 1.5},
+      "save_as": "wait_result"
+    },
+    {
+      "id": "capture_screen",
+      "action": "screen.capture_screenshot",
+      "params": {
+        "output_path": "output/screenshots/taskmgr_{now}.png"
+      },
+      "save_as": "shot"
+    },
+    {
+      "id": "ocr_processes",
+      "action": "vision.ocr_image",
+      "params": {
+        "image_path": "{{ shot.image_path }}"
+      },
+      "save_as": "ocr"
+    },
+    {
+      "id": "save_snapshot",
+      "action": "filesystem.write_json",
+      "params": {
+        "path": "output/reports/taskmgr_snapshot_{now}.json",
+        "data": {
+          "screenshot": "{{ shot }}",
+          "ocr": "{{ ocr }}"
+        }
+      },
+      "save_as": "snapshot_report"
+    }
+  ]
+}
