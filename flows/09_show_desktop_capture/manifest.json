@@ -3,7 +3,6 @@
   "name": "Mostrar escritorio y capturar",
   "family": "pantalla",
   "description": "Un clic = escritorio limpio capturado. Minimiza todas las ventanas con Win+D, espera 800 ms a que la animación termine, captura el escritorio completo con mss y guarda PNG con timestamp. Sirve para auditar el estado real del escritorio (íconos, wallpaper, gadgets) sin interferencia de ventanas abiertas. Soporta dry_run.",
-  "preview": true,
   "allowed_actions": ["ui.hotkey", "system.wait_seconds", "screen.capture_screenshot"],
   "allowed_paths": ["output/screenshots"],
   "max_runtime_seconds": 10,

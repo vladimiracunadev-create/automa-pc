@@ -3,7 +3,6 @@
   "name": "Abrir Configuración de Windows en sección",
   "family": "sistema",
   "description": "Un clic = la app Configuración abierta en la sección deseada. Usa el esquema URI ms-settings: que Windows expone para deep-linkear cualquier pestaña (red, pantalla, sonido, Bluetooth, apps, privacidad, etc.). Más rápido que abrir Configuración y navegar a mano. La sección se elige por contexto. Útil para soporte remoto (decir al usuario 'ejecuta este flow' en vez de 've a Configuración > Sistema > Pantalla > ...').",
-  "preview": true,
   "allowed_actions": ["ui.open_url"],
   "max_runtime_seconds": 5,
   "steps": [

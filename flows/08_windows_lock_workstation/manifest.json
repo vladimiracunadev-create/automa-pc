@@ -3,7 +3,6 @@
   "name": "Bloquear estación de trabajo",
   "family": "sistema",
   "description": "Un clic = sesión bloqueada. Envía el atajo Win+L al sistema y devuelve confirmación. Útil cuando hay que dejar el equipo sin tocar la combinación física (kioskos, walkaway rápidos, automatización por horario). Sin internet ni filesystem. ~0.3s. Soporta dry_run para pruebas sin bloquear realmente.",
-  "preview": true,
   "allowed_actions": ["ui.hotkey"],
   "max_runtime_seconds": 5,
   "steps": [

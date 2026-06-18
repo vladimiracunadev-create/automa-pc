@@ -3,7 +3,6 @@
   "name": "Inventario OCR del escritorio",
   "family": "pantalla",
   "description": "Un clic = lista completa de textos visibles en pantalla. Captura el escritorio con mss, pasa la imagen por OCR (pytesseract) y guarda todos los fragmentos detectados con sus bboxes en JSON. Sirve como auditoría visual: qué app/texto está visible, ventanas abiertas, notificaciones, badges. Es la primitiva sobre la que se construyen casos más ricos (verificar que apareció un texto antes de seguir, encontrar coordenadas de un botón por nombre, etc.).",
-  "preview": true,
   "allowed_actions": ["screen.capture_screenshot", "vision.ocr_image", "filesystem.write_json"],
   "allowed_paths": ["output/screenshots", "output/reports"],
   "max_runtime_seconds": 30,
