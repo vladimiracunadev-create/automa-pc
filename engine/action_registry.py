@@ -76,6 +76,7 @@ _BUILT_IN_ACTIONS: dict[str, str] = {
     'filesystem.move_file': 'actions.filesystem:move_file',
     'screen.capture_screenshot': 'actions.screen:capture_screenshot',
     'screen.capture_region': 'actions.screen:capture_region',
+    'screen.capture_active_window': 'actions.screen:capture_active_window',
     'vision.analyze_image': 'actions.vision:analyze_image',
     'vision.ocr_image': 'actions.vision:ocr_image',
     'vision.find_text_in_image': 'actions.vision:find_text_in_image',

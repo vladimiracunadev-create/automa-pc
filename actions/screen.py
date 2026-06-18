@@ -110,6 +110,36 @@ def _capture_region_pillow(target: Path, bbox: dict[str, int]) -> dict[str, Any]
     }
 
 
+def capture_active_window(output_path: str) -> dict[str, Any]:
+    """Captura solo la ventana actualmente en foco.
+
+    Resuelve el rectángulo de la ventana activa vía ``pygetwindow`` y
+    delega el screenshot a :func:`capture_region`. Si no se puede
+    identificar la ventana activa (sesión headless, ningún foco),
+    levanta ``RuntimeError`` con motivo legible.
+    """
+    try:
+        import pygetwindow as gw
+    except Exception as exc:  # pragma: no cover - import guard
+        raise RuntimeError(f"pygetwindow no disponible: {exc}") from exc
+
+    win = gw.getActiveWindow()
+    if win is None:
+        raise RuntimeError("No hay ventana activa identificable (sesion headless o sin foco).")
+
+    title = getattr(win, "title", "") or ""
+    left = max(int(win.left), 0)
+    top = max(int(win.top), 0)
+    width = int(win.width)
+    height = int(win.height)
+    if width <= 0 or height <= 0:
+        raise RuntimeError(f"Ventana activa con dimensiones invalidas: {width}x{height} (titulo='{title}').")
+
+    result = capture_region(output_path, {"left": left, "top": top, "width": width, "height": height})
+    result["window_title"] = title
+    return result
+
+
 def capture_region(output_path: str, bbox: dict[str, int]) -> dict[str, Any]:
     """Captura una región rectangular del escritorio principal.
 

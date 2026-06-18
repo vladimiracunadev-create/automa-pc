@@ -1,0 +1,19 @@
+{
+  "id": "active_window_screenshot",
+  "name": "Screenshot de la ventana activa",
+  "family": "pantalla",
+  "description": "Un clic = PNG solo de la ventana actualmente en foco. Resuelve el rectángulo de la ventana activa con pygetwindow y captura esa región — sin escritorio, sin barra de tareas, sin otras apps. Útil para documentar pasos puntuales, dejar evidencia de un mensaje de error específico, o comparar el estado de una sola app sin el ruido del entorno.",
+  "allowed_actions": ["screen.capture_active_window"],
+  "allowed_paths": ["output/screenshots"],
+  "max_runtime_seconds": 10,
+  "steps": [
+    {
+      "id": "shot_active",
+      "action": "screen.capture_active_window",
+      "params": {
+        "output_path": "output/screenshots/active_window_{now}.png"
+      },
+      "save_as": "shot"
+    }
+  ]
+}
