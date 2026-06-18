@@ -1,0 +1,29 @@
+{
+  "id": "powershell_audit",
+  "name": "Auditoría rápida con PowerShell",
+  "family": "sistema",
+  "description": "Un clic = corre un comando PowerShell de la allowlist y guarda stdout/stderr/exit_code a JSON. Por defecto la allowlist es read-only (Get-Date, Get-Process, Get-Service, Get-ComputerInfo, etc.) — comandos con punto y coma, pipes, redirección o subshells se rechazan antes de invocar PowerShell. Pensado para snapshots de auditoría sin abrir una consola, no para automatización con efectos.",
+  "allowed_actions": ["system.run_powershell", "filesystem.write_json"],
+  "allowed_paths": ["output/reports"],
+  "max_runtime_seconds": 40,
+  "steps": [
+    {
+      "id": "run_audit_command",
+      "action": "system.run_powershell",
+      "params": {
+        "command": "{{ command }}",
+        "timeout_seconds": 30
+      },
+      "save_as": "ps"
+    },
+    {
+      "id": "save_audit_report",
+      "action": "filesystem.write_json",
+      "params": {
+        "path": "output/reports/powershell_audit_{now}.json",
+        "data": "{{ ps }}"
+      },
+      "save_as": "report"
+    }
+  ]
+}

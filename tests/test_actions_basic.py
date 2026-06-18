@@ -128,6 +128,42 @@ def test_read_clipboard_truncates(monkeypatch):
     assert out["text"] == "x" * 10
 
 
+def test_run_powershell_rejects_chain_tokens():
+    from actions import system as sysmod
+
+    with pytest.raises(ValueError, match="prohibido"):
+        sysmod.run_powershell("Get-Date; Remove-Item C:\\foo")
+
+
+def test_run_powershell_rejects_non_allowlisted():
+    from actions import system as sysmod
+
+    with pytest.raises(ValueError, match="allowlist"):
+        sysmod.run_powershell("Remove-Item C:\\foo")
+
+
+def test_run_powershell_accepts_custom_allowlist(monkeypatch):
+    from actions import system as sysmod
+
+    calls = {}
+
+    class FakeProc:
+        returncode = 0
+        stdout = "ok"
+        stderr = ""
+
+    def fake_run(args, **kwargs):
+        calls["args"] = args
+        return FakeProc()
+
+    import subprocess
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    out = sysmod.run_powershell("Write-Host hola", allowlist=["Write-Host"])
+    assert out["exit_code"] == 0 and out["stdout"] == "ok"
+    assert "Write-Host" in calls["args"][-1]
+
+
 def test_read_clipboard_handles_missing_backend(monkeypatch):
     import actions.system as sysmod
 

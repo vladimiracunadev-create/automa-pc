@@ -97,3 +97,66 @@ def read_clipboard(max_chars: int = 10000) -> dict[str, Any]:
         text = text[:max_chars]
     return {"available": True, "text": text, "length": length, "truncated": truncated, "max_chars": max_chars}
 
+
+# Allowlist por defecto: comandos read-only seguros para auditoria.
+_PS_DEFAULT_ALLOWLIST = (
+    "Get-Date",
+    "Get-Process",
+    "Get-Service",
+    "Get-ComputerInfo",
+    "Get-CimInstance",
+    "Get-WmiObject",
+    "Get-Disk",
+    "Get-Volume",
+    "Get-NetAdapter",
+    "Get-NetIPAddress",
+    "Get-EventLog",
+    "Get-Host",
+    "Get-Location",
+)
+
+
+def run_powershell(command: str, allowlist: list[str] | None = None, timeout_seconds: float = 30.0) -> dict[str, Any]:
+    """Ejecuta un comando PowerShell con allowlist estricta.
+
+    El ``command`` debe empezar EXACTAMENTE con uno de los verbos permitidos
+    (case-sensitive). Cualquier intento de chain (``;``, ``|``, ``&&``, backtick)
+    o redireccion (``>``, ``<``) se rechaza antes de invocar PowerShell.
+
+    Sin allowlist explicito usa :data:`_PS_DEFAULT_ALLOWLIST` (read-only).
+    Para escenarios mas amplios, pasar ``allowlist`` con los verbos deseados.
+    """
+    import subprocess
+
+    if not command or not isinstance(command, str):
+        raise ValueError("command vacio o no es string")
+    trimmed = command.strip()
+    forbidden_chars = (";", "|", "&", "`", ">", "<", "$(", "$_")
+    for token in forbidden_chars:
+        if token in trimmed:
+            raise ValueError(f"PowerShell command contiene token prohibido: {token!r}")
+
+    verbs = tuple(allowlist) if allowlist else _PS_DEFAULT_ALLOWLIST
+    head = trimmed.split()[0]
+    if head not in verbs:
+        raise ValueError(f"comando '{head}' fuera del allowlist: {verbs}")
+
+    proc = subprocess.run(
+        ["powershell", "-NoProfile", "-NonInteractive", "-Command", trimmed],
+        capture_output=True,
+        text=True,
+        timeout=timeout_seconds,
+        check=False,
+    )
+    stdout = proc.stdout or ""
+    stderr = proc.stderr or ""
+    return {
+        "command": trimmed,
+        "exit_code": proc.returncode,
+        "stdout": stdout[:50000],
+        "stderr": stderr[:5000],
+        "stdout_truncated": len(stdout) > 50000,
+        "stderr_truncated": len(stderr) > 5000,
+        "allowlist_used": list(verbs),
+    }
+
