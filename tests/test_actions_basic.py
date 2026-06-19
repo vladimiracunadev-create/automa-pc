@@ -176,3 +176,32 @@ def test_read_clipboard_handles_missing_backend(monkeypatch):
     out = sysmod.read_clipboard()
     assert out["available"] is False
     assert "no display" in out["reason"]
+
+
+def test_desktop_port_open_returns_false_for_closed_port():
+    from app import desktop
+    assert desktop._port_open("127.0.0.1", 1, timeout=0.1) is False
+
+
+def test_desktop_wait_for_server_times_out():
+    from app import desktop
+    assert desktop._wait_for_server("127.0.0.1", 1, timeout_seconds=0.3) is False
+
+
+def test_desktop_main_missing_webview_returns_exit_code(monkeypatch, capsys):
+    import builtins
+
+    from app import desktop
+
+    real_import = builtins.__import__
+
+    def fake_import(name, *args, **kwargs):
+        if name == "webview":
+            raise ImportError("forced")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", fake_import)
+    rc = desktop.launch(host="127.0.0.1", port=1)
+    assert rc == 2
+    err = capsys.readouterr().err
+    assert "pywebview" in err
