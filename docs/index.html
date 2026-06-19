@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Automa — Control local de Windows con un click</title>
+  <meta name="description" content="Panel local que ejecuta acciones reales sobre tu Windows desde cards. 20 flows declarativos · sin IA · sin nube · Python puro. Instalador .exe nativo.">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='80' font-size='80'%3E%F0%9F%A4%96%3C/text%3E%3C/svg%3E">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Automa — Control local de Windows con un click">
+  <meta property="og:description" content="20 flows declarativos JSON · sin IA · sin nube · instalador .exe nativo">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://vladimiracunadev-create.github.io/automa-pc/">
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --bg-card: #1e293b;
+      --bg-elev: #334155;
+      --fg: #f1f5f9;
+      --fg-muted: #94a3b8;
+      --accent: #2dd4bf;
+      --accent-strong: #14b8a6;
+      --border: #334155;
+      --code-bg: #0b1220;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: var(--accent-strong); text-decoration: underline; }
+    code, pre { font-family: "JetBrains Mono", "Consolas", "Menlo", monospace; }
+    code { background: var(--code-bg); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.92em; }
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.2rem;
+      overflow-x: auto;
+      font-size: 0.9em;
+    }
+    pre code { background: transparent; padding: 0; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* Hero */
+    header.hero {
+      padding: 4.5rem 0 3.5rem;
+      background:
+        radial-gradient(ellipse at top, rgba(45, 212, 191, 0.18), transparent 60%),
+        var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 3rem; align-items: center; }
+    @media (max-width: 800px) { .hero-grid { grid-template-columns: 1fr; } }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: rgba(45, 212, 191, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(45, 212, 191, 0.3);
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 1.1rem;
+    }
+    h1 {
+      font-size: clamp(2.1rem, 5vw, 3.2rem);
+      line-height: 1.15;
+      margin: 0 0 1rem;
+      letter-spacing: -0.02em;
+    }
+    .lede {
+      font-size: clamp(1.05rem, 2vw, 1.2rem);
+      color: var(--fg-muted);
+      margin: 0 0 2rem;
+      max-width: 38rem;
+    }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 0.8rem; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 1.4rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.97rem;
+      border: 1px solid transparent;
+      transition: transform 0.08s ease;
+    }
+    .btn:hover { transform: translateY(-1px); text-decoration: none; }
+    .btn-primary { background: var(--accent); color: var(--bg); }
+    .btn-primary:hover { background: var(--accent-strong); color: var(--bg); }
+    .btn-ghost { background: transparent; border-color: var(--border); color: var(--fg); }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    .hero-visual {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.2rem;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    }
+    .hero-visual h3 { margin: 0 0 0.8rem; font-size: 0.95rem; color: var(--fg-muted); font-weight: 500; }
+    .flow-grid-mini {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+    }
+    .flow-mini {
+      aspect-ratio: 1;
+      background: var(--bg-elev);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+
+    /* Section */
+    section { padding: 4rem 0; border-bottom: 1px solid var(--border); }
+    section h2 { font-size: 1.8rem; margin: 0 0 0.5rem; letter-spacing: -0.01em; }
+    section .sub { color: var(--fg-muted); margin: 0 0 2.5rem; font-size: 1.05rem; max-width: 48rem; }
+
+    /* Features */
+    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+    @media (max-width: 800px) { .features { grid-template-columns: 1fr; } }
+    .feat {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+    .feat-icon { font-size: 1.8rem; margin-bottom: 0.6rem; }
+    .feat h3 { margin: 0 0 0.4rem; font-size: 1.1rem; }
+    .feat p { margin: 0; color: var(--fg-muted); font-size: 0.95rem; }
+
+    /* Install */
+    .install-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+    @media (max-width: 800px) { .install-tabs { grid-template-columns: 1fr; } }
+    .install-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+    .install-card h3 { margin: 0 0 0.3rem; font-size: 1.15rem; }
+    .install-card .label { color: var(--accent); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.8rem; }
+    .install-card.featured { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+
+    /* Catalogue */
+    .catalog-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-card);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .catalog-table th, .catalog-table td {
+      padding: 0.7rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.92rem;
+    }
+    .catalog-table th { background: var(--bg-elev); color: var(--fg-muted); font-weight: 500; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
+    .catalog-table tr:last-child td { border-bottom: none; }
+    .catalog-table .slug { font-family: "JetBrains Mono", "Consolas", monospace; font-size: 0.85rem; color: var(--accent); }
+    .pill {
+      display: inline-block;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .pill-fam-pantalla { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+    .pill-fam-sistema { background: rgba(45, 212, 191, 0.15); color: #2dd4bf; }
+    .pill-fam-navegador { background: rgba(244, 114, 182, 0.15); color: #f472b6; }
+    .pill-fam-filesystem { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+    .pill-fam-documentos { background: rgba(96, 165, 250, 0.15); color: #60a5fa; }
+
+    /* Why */
+    .why-list { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; max-width: 60rem; }
+    @media (max-width: 800px) { .why-list { grid-template-columns: 1fr; } }
+    .why-item { display: flex; gap: 0.8rem; align-items: flex-start; padding: 0.7rem; }
+    .why-item .x { color: #f87171; font-weight: 700; font-size: 1.1rem; }
+    .why-item .v { color: var(--accent); font-weight: 700; font-size: 1.1rem; }
+    .why-item p { margin: 0; }
+    .why-item .caption { color: var(--fg-muted); font-size: 0.9rem; }
+
+    /* Footer */
+    footer {
+      padding: 3rem 0 4rem;
+      color: var(--fg-muted);
+      font-size: 0.9rem;
+      text-align: center;
+    }
+    footer a { color: var(--fg-muted); border-bottom: 1px dotted var(--fg-muted); }
+    footer a:hover { color: var(--accent); border-color: var(--accent); text-decoration: none; }
+    .footer-links { margin-bottom: 1rem; }
+    .footer-links a { margin: 0 0.7rem; }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="badge">v0.2.0 · 20 flows · sin IA · sin nube</span>
+        <h1>Control local de Windows con un click.</h1>
+        <p class="lede">
+          Automa es un <strong>panel local</strong> con cards. Cada card hace algo real en tu Windows:
+          abre Notepad, bloquea la pantalla, captura el escritorio, lee el portapapeles,
+          corre PowerShell con allowlist. Todo declarativo en JSON, todo en tu máquina, todo Python puro.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="https://github.com/vladimiracunadev-create/automa-pc/releases/latest" target="_blank" rel="noopener">
+            ⬇️ Descargar instalador Windows
+          </a>
+          <a class="btn btn-ghost" href="https://github.com/vladimiracunadev-create/automa-pc" target="_blank" rel="noopener">
+            ⭐ Ver en GitHub
+          </a>
+        </div>
+      </div>
+      <div class="hero-visual" aria-hidden="true">
+        <h3>Panel · 20 flows</h3>
+        <div class="flow-grid-mini">
+          <div class="flow-mini">📷</div><div class="flow-mini">🌐</div><div class="flow-mini">📁</div><div class="flow-mini">📄</div>
+          <div class="flow-mini">🖥️</div><div class="flow-mini">⚙️</div><div class="flow-mini">📋</div><div class="flow-mini">🔒</div>
+          <div class="flow-mini">🪟</div><div class="flow-mini">📂</div><div class="flow-mini">⚙️</div><div class="flow-mini">👁️</div>
+          <div class="flow-mini">📝</div><div class="flow-mini">⌨️</div><div class="flow-mini">📋</div><div class="flow-mini">🖼️</div>
+          <div class="flow-mini">📊</div><div class="flow-mini">🛡️</div><div class="flow-mini">🪟</div><div class="flow-mini">🔇</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section>
+    <div class="container">
+      <h2>¿Qué hace?</h2>
+      <p class="sub">
+        Un panel que se ve como una app de Windows. Cada botón ejecuta una acción real, no un mock.
+        Si necesitás un caso nuevo, escribís un JSON (a veces ~15 líneas de Python para una acción nueva)
+        y aparece como botón. Sin IA, sin servidores, sin telemetría.
+      </p>
+      <div class="features">
+        <div class="feat">
+          <div class="feat-icon">🪟</div>
+          <h3>App nativa de Windows</h3>
+          <p>Ventana real con pywebview empaquetada con PyInstaller. Instalador .exe que registra la app en Inicio. Sin terminal, sin browser.</p>
+        </div>
+        <div class="feat">
+          <div class="feat-icon">📋</div>
+          <h3>Manifest declarativo</h3>
+          <p>Cada caso es un JSON con steps, allowlist de acciones, allowlist de paths, timeout y políticas. Validado por JSON Schema antes de correr.</p>
+        </div>
+        <div class="feat">
+          <div class="feat-icon">🛡️</div>
+          <h3>Sandbox por flow</h3>
+          <p>Cada flow declara su sandbox. El motor rechaza acciones fuera del allowlist, valida prefijos de paths y exige los secrets antes de iniciar.</p>
+        </div>
+        <div class="feat">
+          <div class="feat-icon">⏰</div>
+          <h3>Scheduler + cron</h3>
+          <p>Cualquier flow puede programarse con intervalo o cron de 5 campos. Lock SQLite contra ejecuciones paralelas. Webhooks IN opt-in con token.</p>
+        </div>
+        <div class="feat">
+          <div class="feat-icon">📊</div>
+          <h3>Histórico + métricas</h3>
+          <p>Todas las corridas en SQLite con filtro, badge de estado, duración y detalle. Endpoint Prometheus + dashboard de métricas.</p>
+        </div>
+        <div class="feat">
+          <div class="feat-icon">🐍</div>
+          <h3>Python puro · local-first</h3>
+          <p>Sin APIs de IA, sin servicios cloud, sin telemetría. La data nunca sale de tu equipo. Funciona offline.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <h2>Instalación</h2>
+      <p class="sub">Tres opciones según para qué lo quieras usar.</p>
+      <div class="install-tabs">
+        <div class="install-card featured">
+          <div class="label">Opción A · Recomendado</div>
+          <h3>Instalador Windows</h3>
+          <p>Doble-click al <code>.exe</code>, wizard de instalación, listo. No requiere admin.</p>
+          <p>
+            <a class="btn btn-primary" href="https://github.com/vladimiracunadev-create/automa-pc/releases/latest" target="_blank" rel="noopener">⬇️ Descargar último release</a>
+          </p>
+        </div>
+        <div class="install-card">
+          <div class="label">Opción B · desarrolladores</div>
+          <h3>Desde código fuente</h3>
+<pre><code>git clone https://github.com/vladimiracunadev-create/automa-pc
+cd automa-pc
+uv sync --extra dev --extra schema
+uv run automa-desktop</code></pre>
+          <p style="margin: 0.6rem 0 0; color: var(--fg-muted); font-size: 0.85rem;">Cross-platform (Win / Linux / macOS).</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <h2>Catálogo · 20 flows</h2>
+      <p class="sub">Cada flow es una carpeta en <code>flows/NN_slug/</code> con manifest JSON, contexto de ejemplo y README detallado.</p>
+
+      <table class="catalog-table">
+        <thead>
+          <tr><th>#</th><th>Caso</th><th>Familia</th><th>Qué hace de un click</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>01</td><td><span class="slug">📷 screen_capture_analyze</span></td><td><span class="pill pill-fam-pantalla">pantalla</span></td><td>Captura el escritorio (PNG 1920×1080) y analiza brillo/RGB.</td></tr>
+          <tr><td>02</td><td><span class="slug">🌐 screen_capture_browser</span></td><td><span class="pill pill-fam-navegador">navegador</span></td><td>Lanza Chromium headless y captura el DOM de una URL.</td></tr>
+          <tr><td>03</td><td><span class="slug">📁 folder_inventory</span></td><td><span class="pill pill-fam-filesystem">filesystem</span></td><td>Lista archivos de una carpeta a JSON.</td></tr>
+          <tr><td>04</td><td><span class="slug">📄 document_drop_pipeline</span></td><td><span class="pill pill-fam-documentos">documentos</span></td><td>Resume archivos .txt/.md/.log/.csv/.json.</td></tr>
+          <tr><td>05</td><td><span class="slug">🖥️ system_healthcheck</span></td><td><span class="pill pill-fam-sistema">sistema</span></td><td>Snapshot CPU/RAM/disco + reglas de alerta.</td></tr>
+          <tr><td>06</td><td><span class="slug">⚙️ process_watchdog</span></td><td><span class="pill pill-fam-sistema">sistema</span></td><td>Top 10 procesos con alertas por umbral RAM/CPU.</td></tr>
+          <tr><td>07</td><td><span class="slug">📋 browser_form_filler</span></td><td><span class="pill pill-fam-navegador">navegador</span></td><td>Chromium visible llena form de 10 campos con seeds.</td></tr>
+          <tr><td>08</td><td><span class="slug">🔒 windows_lock_workstation</span></td><td><span class="pill pill-fam-sistema">sistema</span></td><td>Bloquea el equipo (Win+L).</td></tr>
+          <tr><td>09</td><td><span class="slug">🖥️ show_desktop_capture</span></td><td><span class="pill pill-fam-pantalla">pantalla</span></td><td>Win+D + captura del escritorio limpio.</td></tr>
+          <tr><td>10</td><td><span class="slug">📁 explorer_open_path</span></td><td><span class="pill pill-fam-sistema">sistema</span></td><td>Abre explorer.exe en una ruta configurable.</td></tr>
+          <tr><td>11</td><td><span class="slug">⚙️ settings_open_section</span></td><td><span class="pill pill-fam-sistema">sistema</span></td><td>Abre Configuración en sección vía URI ms-settings:</td></tr>
+          <tr><td>12</td><td><span class="slug">👁️ desktop_ocr_inventory</span></td><td><span class="pill pill-fam-pantalla">pantalla</span></td><td>OCR de toda la pantalla → JSON con bboxes.</td></tr>
+          <tr><td>13</td><td><span class="slug">📝 notepad_quick_note</span></td><td><span class="pill pill-fam-sistema">sistema</span></td><td>Abre Notepad y tipea una nota configurable.</td></tr>
+          <tr><td>14</td><td><span class="slug">⌨️ run_dialog_command</span></td><td><span class="pill pill-fam-sistema">sistema</span></td><td>Win+R + tipea comando + Enter.</td></tr>
+          <tr><td>15</td><td><span class="slug">📋 clipboard_capture</span></td><td><span class="pill pill-fam-sistema">sistema</span></td><td>Lee portapapeles y persiste a JSON.</td></tr>
+          <tr><td>16</td><td><span class="slug">🖼️ active_window_screenshot</span></td><td><span class="pill pill-fam-pantalla">pantalla</span></td><td>PNG solo de la ventana en foco.</td></tr>
+          <tr><td>17</td><td><span class="slug">📊 taskmgr_snapshot</span></td><td><span class="pill pill-fam-pantalla">pantalla</span></td><td>Task Manager + captura + OCR.</td></tr>
+          <tr><td>18</td><td><span class="slug">🛡️ powershell_audit</span></td><td><span class="pill pill-fam-sistema">sistema</span></td><td>PowerShell con allowlist read-only.</td></tr>
+          <tr><td>19</td><td><span class="slug">🪟 taskbar_capture</span></td><td><span class="pill pill-fam-pantalla">pantalla</span></td><td>PNG solo de la barra de tareas.</td></tr>
+          <tr><td>20</td><td><span class="slug">🔇 volume_mute_toggle</span></td><td><span class="pill pill-fam-sistema">sistema</span></td><td>Togglea el mute (tecla multimedia).</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <h2>Lo que <em>no</em> es</h2>
+      <p class="sub">Decir qué no hace ayuda tanto como decir qué hace.</p>
+      <div class="why-list">
+        <div class="why-item">
+          <span class="x">✕</span>
+          <div><strong>No es un agente con IA.</strong><p class="caption">El "razonamiento" lo da el manifest declarativo + condiciones del engine. Sin LLM, sin APIs de OpenAI/Anthropic, sin nube.</p></div>
+        </div>
+        <div class="why-item">
+          <span class="x">✕</span>
+          <div><strong>No es una plataforma multi-usuario.</strong><p class="caption">Es para un operador en su equipo. Sin RBAC, sin login.</p></div>
+        </div>
+        <div class="why-item">
+          <span class="x">✕</span>
+          <div><strong>No envía data a ningún lado.</strong><p class="caption">Webhooks IN/OUT existen pero son opt-in y locales.</p></div>
+        </div>
+        <div class="why-item">
+          <span class="x">✕</span>
+          <div><strong>No se "configura por chat".</strong><p class="caption">Cada caso es un JSON versionado en git. Reproducible, auditable, diff-able.</p></div>
+        </div>
+        <div class="why-item">
+          <span class="v">✓</span>
+          <div><strong>Sí ejecuta acciones reales sobre tu Windows.</strong><p class="caption">Abre ventanas, tipea, bloquea, captura, mutea. No es un mock.</p></div>
+        </div>
+        <div class="why-item">
+          <span class="v">✓</span>
+          <div><strong>Sí crece agregando casos.</strong><p class="caption">El sustrato es estable. La inversión va a más flows, no a refactor.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-links">
+        <a href="https://github.com/vladimiracunadev-create/automa-pc">GitHub</a>
+        <a href="https://github.com/vladimiracunadev-create/automa-pc/releases">Releases</a>
+        <a href="https://github.com/vladimiracunadev-create/automa-pc/blob/main/README.md">README</a>
+        <a href="https://github.com/vladimiracunadev-create/automa-pc/blob/main/docs/ROADMAP.md">Roadmap</a>
+        <a href="https://github.com/vladimiracunadev-create/automa-pc/blob/main/SECURITY.md">Seguridad</a>
+      </div>
+      <p>Automa · MIT · hecho con Python puro, sin IA, en Buenos Aires.</p>
+    </div>
+  </footer>
+</body>
+</html>
