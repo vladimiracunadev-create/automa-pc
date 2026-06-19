@@ -22,6 +22,8 @@
 [![License](https://img.shields.io/badge/license-MIT-15803d.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.2.0-0f766e)](CHANGELOG.md)
 [![Security policy](https://img.shields.io/badge/security-policy-7c3aed.svg)](SECURITY.md)
+[![Website](https://img.shields.io/badge/website-vladimiracunadev--create.github.io%2Fautoma--pc-2dd4bf.svg)](https://vladimiracunadev-create.github.io/automa-pc/)
+[![Download](https://img.shields.io/badge/download-Automa--Setup--v0.2.0.exe-14b8a6.svg)](https://github.com/vladimiracunadev-create/automa-pc/releases/latest)
 
 </div>
 
