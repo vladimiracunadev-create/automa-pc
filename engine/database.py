@@ -7,9 +7,9 @@ from contextlib import contextmanager
 from datetime import datetime, timezone
 from typing import Any
 
-from engine.paths import root_dir
+from engine.paths import data_dir
 
-DB_PATH = root_dir() / 'db' / 'runs.db'
+DB_PATH = data_dir() / 'db' / 'runs.db'
 
 
 def utc_now() -> str:
@@ -259,7 +259,7 @@ def get_flow_config(folder: str) -> dict[str, Any] | None:
 
 
 def set_flow_config(folder: str, config: dict[str, Any]) -> None:
-    config_path = root_dir() / 'configs' / f'{folder}.json'
+    config_path = data_dir() / 'configs' / f'{folder}.json'
     config_path.parent.mkdir(parents=True, exist_ok=True)
     config_path.write_text(json.dumps(config, ensure_ascii=False, indent=2), encoding='utf-8')
     with connect() as conn:

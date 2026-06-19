@@ -178,6 +178,34 @@ def test_read_clipboard_handles_missing_backend(monkeypatch):
     assert "no display" in out["reason"]
 
 
+def test_data_dir_equals_root_in_dev_mode():
+    from engine.paths import data_dir, root_dir
+    # Sin AUTOMA_DATA_ROOT ni _MEIPASS, ambos coinciden con el repo.
+    assert data_dir() == root_dir()
+
+
+def test_data_dir_honors_env_override(tmp_path, monkeypatch):
+    from engine import paths
+
+    target = tmp_path / "custom-data"
+    monkeypatch.setenv("AUTOMA_DATA_ROOT", str(target))
+    out = paths.data_dir()
+    assert out == target.resolve()
+    assert target.is_dir()
+
+
+def test_data_dir_frozen_uses_localappdata(monkeypatch, tmp_path):
+    from engine import paths
+
+    monkeypatch.delenv("AUTOMA_DATA_ROOT", raising=False)
+    monkeypatch.setattr(paths, "_is_frozen", lambda: True)
+    monkeypatch.setattr(paths.sys, "platform", "win32")
+    monkeypatch.setenv("LOCALAPPDATA", str(tmp_path))
+    out = paths.data_dir()
+    assert out == (tmp_path / "Automa").resolve()
+    assert (tmp_path / "Automa").is_dir()
+
+
 def test_desktop_port_open_returns_false_for_closed_port():
     from app import desktop
     assert desktop._port_open("127.0.0.1", 1, timeout=0.1) is False

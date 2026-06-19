@@ -10,6 +10,7 @@ from engine.database import init_db, insert_step, upsert_run
 from engine.introspection import extract_existing_paths
 from engine.loader import FlowLoader
 from engine.logger import JsonlLogger
+from engine.paths import data_dir
 from engine.sandbox import SandboxPolicy, SandboxViolation
 from engine.state_store import StateStore
 from engine.template import render_value
@@ -39,8 +40,9 @@ class Orchestrator:
             max_runtime_seconds=self.definition.max_runtime_seconds,
         )
         self.run_id = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
-        self.log_path = Path('logs') / f'{self.definition.id}_{self.run_id}.jsonl'
-        self.state_path = Path('state') / f'{self.definition.id}_{self.run_id}.json'
+        _data = data_dir()
+        self.log_path = _data / 'logs' / f'{self.definition.id}_{self.run_id}.jsonl'
+        self.state_path = _data / 'state' / f'{self.definition.id}_{self.run_id}.json'
         self.logger = JsonlLogger(self.log_path, run_id=self.run_id)
         self.state_store = StateStore(self.state_path)
         self.steps_by_id = {step.id: step for step in self.definition.steps}

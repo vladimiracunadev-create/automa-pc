@@ -5,6 +5,21 @@ Todas las versiones notables de Automa se documentan acá. El formato sigue
 
 ## [Unreleased]
 
+## [0.2.1] · 2026-06-18
+
+### 🐛 Fix · Bundle: `PermissionError` al escribir en `C:\Program Files\Automa\_internal\db`
+
+Cuando el instalador deja la app bajo `Program Files` (read-only para usuarios sin admin), `engine.database.init_db()` levantaba `PermissionError [WinError 5]` al intentar crear `_internal/db/`. Causa: el bundle frozen usaba `root_dir()` (= `_MEIPASS`, read-only) tanto para datafiles como para state writable.
+
+**Fix:** se separa el root **read-only** del **writable**:
+
+- Nueva función [`engine.paths.data_dir()`](engine/paths.py): en modo frozen apunta a `%LOCALAPPDATA%\Automa\` (Windows) o `$XDG_DATA_HOME/automa-pc` (otros). En modo desarrollo coincide con `root_dir()` — backward-compat total.
+- Override explícito con `$AUTOMA_DATA_ROOT`.
+- Migrados a `data_dir()`: `engine.database.DB_PATH`, `engine.database.set_flow_config`, `engine.secrets.SECRETS_PATH`, `engine.orchestrator` (log_path, state_path).
+- `installer/automa_entry.py` ahora hace `os.chdir(data_dir())` cuando arranca frozen, para que rutas relativas de los flows (`output/screenshots/...`) caigan en disco writable y el sandbox las resuelva contra cwd correctamente.
+
+Tests: 3 casos nuevos cubren `data_dir()` en dev mode (== root_dir), con `$AUTOMA_DATA_ROOT`, y frozen + LOCALAPPDATA. Suite: 119/119, cobertura 54.78%.
+
 ## [0.2.0] · 2026-06-18
 
 ### 🪟 App de escritorio Windows + instalador

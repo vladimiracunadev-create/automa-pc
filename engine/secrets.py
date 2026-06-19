@@ -16,9 +16,9 @@ import json
 import os
 from typing import Any
 
-from engine.paths import root_dir
+from engine.paths import data_dir
 
-SECRETS_PATH = root_dir() / 'secrets' / 'secrets.json'
+SECRETS_PATH = data_dir() / 'secrets' / 'secrets.json'
 
 
 def _load_file_secrets() -> dict[str, Any]:
