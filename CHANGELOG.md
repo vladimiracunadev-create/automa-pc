@@ -5,6 +5,61 @@ Todas las versiones notables de Automa se documentan acá. El formato sigue
 
 ## [Unreleased]
 
+## [0.2.0] · 2026-06-18
+
+### 🪟 App de escritorio Windows + instalador
+
+Automa ahora se distribuye como **app nativa de Windows**:
+
+- Nuevo módulo [`app/desktop.py`](app/desktop.py): arranca el HTTP server en thread daemon y abre el panel dentro de una ventana `pywebview` (EdgeChromium en Windows 10/11). Entry-point `automa-desktop`.
+- [`installer/automa.spec`](installer/automa.spec): bundle PyInstaller one-folder con todos los datafiles (`flows/`, `schemas/`, pywebview data) y los hidden imports necesarios. Output: `dist/Automa/Automa.exe` (~31 MB).
+- [`installer/Automa.iss`](installer/Automa.iss): script Inno Setup 6+ que empaqueta el bundle como `Automa-Setup-vX.Y.Z.exe`. Install per-user (sin admin), shortcuts en Start Menu y opcional desktop, idiomas es/en.
+- [`.github/workflows/release.yml`](.github/workflows/release.yml): workflow que dispara en push de tag `v*.*.*`, builda en `windows-latest`, compila el instalador con Inno Setup (preinstalado en el runner) y sube el `.exe` al release. Inputs sanitizados via env + regex contra inyección.
+- [`engine/paths.py`](engine/paths.py): `root_dir()` respeta `$AUTOMA_ROOT` y `sys._MEIPASS` además del default basado en `__file__` — los flows y schemas se resuelven correctamente desde el bundle frozen.
+
+### 🚀 Fase 2 del roadmap completa · 8 flows nuevos (13–20)
+
+Los 8 casos planeados en [docs/ROADMAP.md](docs/ROADMAP.md) §Fase 2 ahora son operativos:
+
+| # | Slug | Qué hace |
+| --- | --- | --- |
+| 13 | `notepad_quick_note` | Abre Notepad y tipea una nota configurable. |
+| 14 | `run_dialog_command` | `Win+R` + tipea comando + Enter. |
+| 15 | `clipboard_capture` | Lee el portapapeles y lo persiste a JSON. |
+| 16 | `active_window_screenshot` | PNG solo de la ventana en foco (`pygetwindow`). |
+| 17 | `taskmgr_snapshot` | Abre Task Manager y captura + OCR. |
+| 18 | `powershell_audit` | Ejecuta PowerShell de allowlist read-only. |
+| 19 | `taskbar_capture` | PNG solo de la barra de tareas. |
+| 20 | `volume_mute_toggle` | Togglea el mute (tecla multimedia). |
+
+Catálogo total: **20 flows operativos** (12 → 20).
+
+### 🧰 4 acciones nuevas (~95 LOC)
+
+Estrictamente aditivas — ningún cambio rompe acciones existentes:
+
+- `screen.capture_region(output_path, bbox)` — recorte rectangular del monitor principal con `mss` (fallback PIL). `bbox` admite `{left, top, width, height}` o `{left, top, right, bottom}`; valores negativos = anclaje al borde opuesto (estilo CSS); valores grandes se clampean al borde.
+- `screen.capture_active_window(output_path)` — resuelve el rect de la ventana en foco con `pygetwindow` y delega en `capture_region`. Devuelve `window_title` para auditoría.
+- `system.read_clipboard(max_chars=10000)` — lee el portapapeles via `pyperclip`. Trunca a `max_chars`, reporta `length` real y `truncated`. Si el backend no está disponible, retorna `available=False` con `reason` legible — no levanta.
+- `system.run_powershell(command, allowlist=None, timeout_seconds=30)` — corre PowerShell con allowlist estricta por verbo inicial (default read-only: `Get-Date`, `Get-Process`, …). Pre-rechaza tokens de chain/redirección (`;|&` `` ` `` `><` `$(` `$_`) **antes** de invocar pwsh.
+
+### 📦 Dependencias agregadas
+
+- `pyperclip>=1.8.2,<2` — portapapeles cross-platform.
+- `PyGetWindow>=0.0.9,<1` — explícito (era transitivo via pyautogui).
+- `pywebview>=5.4,<6` — ventana nativa para la app de escritorio.
+
+### 🛡️ Calidad
+
+- Suite: **115 tests pasando** (era 95). 20 tests nuevos cubren las 4 acciones y el wrapper desktop.
+- Cobertura: **54.68%** (sobre el alcance `engine + actions + app + decision`).
+- Ruff limpio, schema validation OK (20 flows · 33 acciones registradas).
+
+### 🧹 Chore
+
+- `.claude/` agregado a `.gitignore` para evitar staging accidental de worktrees locales.
+- Markers `.disabled` removidos de los flows 08–12 (residuo del commit que introdujo el campo `preview`).
+
 ### 🚧 Preview: flows 08–12 visibles pero no operativos
 
 Los 5 casos nuevos agregados en Fase 1 del roadmap (08 lock, 09 desktop capture, 10 explorer, 11 settings, 12 desktop OCR) ahora aparecen en el panel **marcados como preview**:

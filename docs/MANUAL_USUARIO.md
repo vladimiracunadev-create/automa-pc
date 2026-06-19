@@ -98,8 +98,8 @@ $ python -c "from engine.database import init_db, list_schedules; init_db(); pri
 
 | Item | Resultado |
 | --- | --- |
-| Tests pytest | ✅ 84/84 |
-| Validador manifests | ✅ 12 flows, 28 acciones, 0 errores |
+| Tests pytest | ✅ 115/115 |
+| Validador manifests | ✅ 20 flows, 33 acciones, 0 errores |
 | Lint ruff | ✅ All checks passed |
 | Caso 1 genera PNG real del escritorio | ✅ 1920×1080 |
 | Caso 12 genera PNG real del navegador | ✅ 1280×800 (DOM puro) |

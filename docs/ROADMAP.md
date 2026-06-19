@@ -20,9 +20,9 @@ Toda inversión nueva va a 🟢. La dirección: **operar componentes nativos de 
 
 ---
 
-## ✅ Catálogo actual · 7 flows
+## ✅ Catálogo actual · 20 flows
 
-Detalle completo en [README §Catálogo actual](../README.md#-catálogo-actual--7-flows-operativos) y [docs/FAMILIAS_Y_CASOS.md](FAMILIAS_Y_CASOS.md).
+Detalle completo en [README §Catálogo actual](../README.md#-catálogo-actual--20-flows-operativos) y [docs/FAMILIAS_Y_CASOS.md](FAMILIAS_Y_CASOS.md).
 
 | # | Slug | Nivel |
 | --- | --- | --- |
@@ -33,6 +33,19 @@ Detalle completo en [README §Catálogo actual](../README.md#-catálogo-actual--
 | 05 | `system_healthcheck` | 🟡 |
 | 06 | `process_watchdog` | 🟡 |
 | 07 | `browser_form_filler` | 🟢 |
+| 08 | `windows_lock_workstation` | 🟢 |
+| 09 | `show_desktop_capture` | 🟢 |
+| 10 | `explorer_open_path` | 🟢 |
+| 11 | `settings_open_section` | 🟢 |
+| 12 | `desktop_ocr_inventory` | 🟢 |
+| 13 | `notepad_quick_note` | 🟢 |
+| 14 | `run_dialog_command` | 🟢 |
+| 15 | `clipboard_capture` | 🟢 |
+| 16 | `active_window_screenshot` | 🟢 |
+| 17 | `taskmgr_snapshot` | 🟢 |
+| 18 | `powershell_audit` | 🟢 |
+| 19 | `taskbar_capture` | 🟢 |
+| 20 | `volume_mute_toggle` | 🟢 |
 
 ---
 
@@ -69,7 +82,14 @@ Cada caso aquí requiere **una acción nueva en `actions/`** (~10–30 LOC). Est
 | 19 | `taskbar_capture` | Barra de tareas | `screen.capture_region(bbox)` para captura parcial | ~15 LOC |
 | 20 | `volume_mute_toggle` | Audio del sistema | — (solo `ui.hotkey` con tecla multimedia `volumemute`) | 0 LOC nuevos |
 
-### Estado: 📋 propuesto, no implementado
+### Estado: 🟢 lanzado en v0.2.0
+
+Todas las acciones nuevas viven en sus módulos respectivos:
+
+- [`actions/system.py:read_clipboard`](../actions/system.py)
+- [`actions/system.py:run_powershell`](../actions/system.py) (allowlist + rechazo de tokens de chain antes de invocar pwsh)
+- [`actions/screen.py:capture_region`](../actions/screen.py) (bbox con anchors negativos estilo CSS + fallback PIL)
+- [`actions/screen.py:capture_active_window`](../actions/screen.py) (via pygetwindow + reuse de `capture_region`)
 
 > [!NOTE]
 > **Capacidad de atajos**: el panel mapea `Alt+1..Alt+=` (12 flows). A partir del flow 13 los nuevos casos siguen accesibles por click en su card del panel, pero **sin atajo Alt**. Cuando sumemos varios más sin atajo, evaluamos extender el mecanismo (`Alt+Shift+N`, paginar atajos por familia, …).
@@ -139,4 +159,4 @@ Abre un issue en GitHub con la plantilla:
 
 ---
 
-Última actualización: 2026-06-02 · Fase 1 lanzada.
+Última actualización: 2026-06-18 · Fase 1 y Fase 2 lanzadas (v0.2.0) · app de escritorio + instalador Windows publicados.

@@ -9,10 +9,11 @@
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Windows](https://img.shields.io/badge/target-Windows-0078D4?logo=windows&logoColor=white)
+![Desktop app](https://img.shields.io/badge/desktop-pywebview%20%2B%20PyInstaller-1F2937?logo=windows&logoColor=white)
 ![Playwright](https://img.shields.io/badge/Playwright-headless%20%2B%20visible-2EAD33?logo=playwright&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-historial-003B57?logo=sqlite&logoColor=white)
 ![uv](https://img.shields.io/badge/packaging-uv-DE5FE9?logo=astral&logoColor=white)
-![pytest](https://img.shields.io/badge/tests-90%20pytest-3DA639?logo=pytest&logoColor=white)
+![pytest](https://img.shields.io/badge/tests-115%20pytest-3DA639?logo=pytest&logoColor=white)
 ![Local First](https://img.shields.io/badge/local--first-sí-2D7A66)
 
 [![CI](https://github.com/vladimiracunadev-create/automa-pc/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/vladimiracunadev-create/automa-pc/actions/workflows/ci.yml)
@@ -39,7 +40,7 @@ El objetivo a largo plazo: tener control declarativo sobre tareas operativas rea
 
 ---
 
-## 🗂️ Catálogo actual · 12 flows operativos
+## 🗂️ Catálogo actual · 20 flows operativos
 
 Clasificados por su nivel de interacción con el sistema. Hoja de ruta completa en [docs/ROADMAP.md](docs/ROADMAP.md).
 
@@ -55,6 +56,14 @@ Clasificados por su nivel de interacción con el sistema. Hoja de ruta completa 
 | **`📁 10_explorer_open_path`** | sistema | Abre `explorer.exe` en una ruta configurable (por defecto `C:\Users`). |
 | **`⚙️ 11_settings_open_section`** | sistema | Abre la app **Configuración** de Windows en sección configurable vía URI `ms-settings:` (red, pantalla, sonido…). |
 | **`👁️ 12_desktop_ocr_inventory`** | pantalla | Captura el escritorio, ejecuta OCR sobre la imagen y guarda **todos los textos visibles** (con bboxes) como inventario JSON. |
+| **`📝 13_notepad_quick_note`** | sistema | Abre Notepad y tipea una nota configurable. Scratchpad volátil de un click. |
+| **`⌨️ 14_run_dialog_command`** | sistema | Abre el diálogo Ejecutar (`Win+R`), tipea un comando y lo lanza. |
+| **`📋 15_clipboard_capture`** | sistema | Lee el portapapeles y lo persiste a JSON con timestamp. |
+| **`🖼️ 16_active_window_screenshot`** | pantalla | PNG solo de la ventana en foco (sin escritorio ni otras apps). Incluye `window_title` en metadata. |
+| **`📊 17_taskmgr_snapshot`** | pantalla | Abre Task Manager (`Ctrl+Shift+Esc`), captura screenshot y OCR de procesos visibles. |
+| **`🛡️ 18_powershell_audit`** | sistema | Ejecuta un comando PowerShell de allowlist read-only y guarda stdout/stderr/exit_code a JSON. |
+| **`🪟 19_taskbar_capture`** | pantalla | PNG solo de la franja inferior (barra de tareas + system tray). |
+| **`🔇 20_volume_mute_toggle`** | sistema | Togglea el mute del audio maestro (tecla multimedia `volumemute`). |
 
 ### 🟡 Utilidades sobre el equipo (solo lectura · solo JSON)
 
@@ -87,33 +96,43 @@ Clasificados por su nivel de interacción con el sistema. Hoja de ruta completa 
 
 ## ⚡ Inicio rápido
 
-### Con uv (recomendado)
+### Opción A · Instalador Windows (recomendado para usuarios)
+
+1. Bajá **`Automa-Setup-vX.Y.Z.exe`** desde el [último release](https://github.com/vladimiracunadev-create/automa-pc/releases/latest).
+2. Doble-click → wizard de instalación → "Launch Automa" al terminar.
+3. Se abre una **ventana nativa** con el panel — sin browser, sin terminal.
+
+El instalador no requiere admin (install per-user), agrega entrada al menú Inicio y opcional acceso directo en escritorio. Para desinstalar: Configuración → Aplicaciones → Automa.
+
+### Opción B · Desde código (desarrollo / Linux / macOS)
 
 ```bash
 uv sync --extra dev --extra schema
 python -m playwright install chromium    # necesario para flows 02 y 07
-uv run python -m app.server
+uv run automa-desktop                    # ventana nativa pywebview
+# o:
+uv run automa-panel                      # solo HTTP en 127.0.0.1:8787
 ```
 
-### Con pip
+### Opción C · pip
 
 ```bash
 python -m venv .venv
 .venv\Scripts\activate
 pip install -e ".[dev,schema]"
 python -m playwright install chromium
-python -m app.server
+automa-desktop
 ```
-
-Abrí: <http://127.0.0.1:8787>
 
 CLI tras instalar:
 
 ```bash
-flujo list                                     # lista flows
-flujo run flows/05_system_healthcheck          # corre uno
-flujo scheduler --interval 2                   # scheduler en bucle
-automa-validate                                 # JSON Schema + acciones + transitions
+automa list                                    # lista flows
+automa run flows/05_system_healthcheck         # corre uno
+automa scheduler --interval 2                  # scheduler en bucle
+automa-validate                                # JSON Schema + acciones + transitions
+automa-panel                                   # panel HTTP en 127.0.0.1:8787
+automa-desktop                                 # panel en ventana nativa pywebview
 ```
 
 ---
@@ -139,7 +158,7 @@ flowchart LR
     Schema["🧪 schemas/manifest.schema.json"] --> Validator["validate_project.py"]
     Config["⚙️ configs/*.json + context_overrides API"] --> Orchestrator
     Sandbox["🛡️ SandboxPolicy"] --> Orchestrator
-    Orchestrator --> Registry["LazyActionRegistry · 29 acciones"]
+    Orchestrator --> Registry["LazyActionRegistry · 33 acciones"]
     Registry --> Builtin["📦 actions/* (mss · psutil · playwright · pyautogui)"]
     Orchestrator --> DB["💾 db/runs.db"]
     Orchestrator --> Output["🖼️ output/screenshots + reports"]
@@ -162,9 +181,10 @@ flowchart LR
 | Métricas Prometheus + dashboard | 🟢 Operativo | [engine/metrics.py](engine/metrics.py) |
 | Webhooks IN | 🟢 Operativo | `POST /api/hook/<folder>` con `AUTOMA_WEBHOOK_TOKEN` |
 | Plugins de terceros (entry-points) | 🟢 Operativo | [engine/action_registry.py](engine/action_registry.py) |
-| **Casos avanzados (ventana real)** | 🟢 3 flows · 01 02 07 | [flows/](flows) |
+| **Casos avanzados (ventana real)** | 🟢 16 flows · 01 02 07–20 | [flows/](flows) |
 | **Casos utilitarios (solo JSON)** | 🟡 4 flows · 03 04 05 06 | mínimo aceptable, no foco |
-| Suite pytest | 🟢 79 verde | [tests/](tests) |
+| **App de escritorio (instalador Windows)** | 🟢 v0.2.0 | [installer/](installer), [release.yml](.github/workflows/release.yml) |
+| Suite pytest | 🟢 115 verde | [tests/](tests) |
 | CI: lint + tests + smoke + security + docs | 🟢 Operativo | [.github/workflows/](.github/workflows) |
 | CI hardening (SHA pin + zizmor + Trojan Source) | 🟢 Operativo | [SECURITY.md](SECURITY.md) §CI · [workflow-security.yml](.github/workflows/workflow-security.yml) |
 | Multiusuario / RBAC | 🔴 No | un operador local |
@@ -243,9 +263,9 @@ Política de reporte de vulnerabilidades también en [SECURITY.md](SECURITY.md).
 ## ✅ Validación local antes de pushear
 
 ```bash
-uv run pytest                          # 79 tests
+uv run pytest                          # 115 tests
 uv run ruff check .                    # lint
-uv run python scripts/validate_project.py   # JSON Schema + acciones
+uv run python scripts/validate_project.py   # JSON Schema + acciones (20 flows · 33 acciones)
 ```
 
 Las tres deben pasar. CI corre lo mismo + `security.yml` (CodeQL `security-extended`, detect-secrets sobre filesystem **e historial**, Trojan Source CVE-2021-42574, ofuscación, exfiltración, pip-audit) + `workflow-security.yml` (actionlint + zizmor + pin-check sobre los propios YAML) + `markdown-docs.yml` (links rotos) + `dependency-hygiene.yml`.
@@ -294,7 +314,8 @@ Toda acción third-party va pinned a SHA — política completa en [SECURITY.md]
 /app          🖥️  Panel local + API JSON
 /actions      📦 mss · psutil · playwright · pyautogui · webbrowser · ...
 /engine       ⚙️  Motor: orquestador · sandbox · scheduler · cron · métricas · secretos
-/flows        📋 7 casos operativos
+/flows        📋 20 casos operativos
+/installer    📦 PyInstaller spec + Inno Setup script + build helper
 /data
   /web        🌐 HTML local (form_demo · control_page)
   /seeds      🧬 100 registros del flow 07 + tracking de usados
