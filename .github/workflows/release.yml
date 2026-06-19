@@ -1,0 +1,102 @@
+name: Release Windows installer
+
+# Dispara: push de tag vX.Y.Z (canonical) o manual desde la UI.
+# Construye dist/Automa/ con PyInstaller en windows-latest, empaqueta con
+# Inno Setup (preinstalado en el runner como `iscc`), y sube el .exe al
+# release de GitHub correspondiente.
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag a releasear (formato vX.Y.Z)"
+        required: true
+        default: "v0.2.0"
+
+permissions:
+  contents: write  # crear/editar releases y subir assets
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-windows:
+    name: Build .exe + installer (windows-latest)
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Resolve version
+        id: ver
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $tag = "${{ inputs.tag }}"
+          } else {
+            $tag = "${{ github.ref_name }}"
+          }
+          $version = $tag.TrimStart("v")
+          "tag=$tag" | Out-File -Append $env:GITHUB_OUTPUT
+          "version=$version" | Out-File -Append $env:GITHUB_OUTPUT
+          Write-Host "Release tag=$tag version=$version"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b  # v8.1.0
+        with:
+          enable-cache: true
+          cache-dependency-glob: "pyproject.toml"
+
+      - name: Install Python 3.12
+        run: uv python install 3.12
+
+      - name: Install project + build tooling
+        run: |
+          uv sync --extra dev --extra schema
+          uv pip install pyinstaller pywebview pyperclip PyGetWindow
+
+      - name: Validate manifests
+        run: uv run python scripts/validate_project.py
+
+      - name: Build PyInstaller bundle
+        run: uv run pyinstaller installer/automa.spec --noconfirm --clean
+
+      - name: Verify bundle
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "dist/Automa/Automa.exe")) { throw "Build fallo: no se encontro dist/Automa/Automa.exe" }
+          $size = (Get-Item "dist/Automa/Automa.exe").Length / 1MB
+          Write-Host "Automa.exe = $([Math]::Round($size, 1)) MB"
+
+      - name: Compile installer with Inno Setup
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { $iscc = "iscc.exe" }
+          & "$iscc" /DAppVersion=${{ steps.ver.outputs.version }} installer/Automa.iss
+          if ($LASTEXITCODE -ne 0) { throw "Inno Setup fallo con exit $LASTEXITCODE" }
+
+      - name: Locate installer
+        id: installer
+        shell: pwsh
+        run: |
+          $f = Get-ChildItem installer/output/Automa-Setup-v*.exe | Select-Object -First 1
+          if (-not $f) { throw "No se encontro el .exe del instalador" }
+          "path=$($f.FullName)" | Out-File -Append $env:GITHUB_OUTPUT
+          "name=$($f.Name)" | Out-File -Append $env:GITHUB_OUTPUT
+          Write-Host "Installer: $($f.FullName) ($([Math]::Round($f.Length/1MB,1)) MB)"
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@72f2c25fcb47643c292f7107632f7a47c1df5cd8  # v2.3.2
+        with:
+          tag_name: ${{ steps.ver.outputs.tag }}
+          name: Automa ${{ steps.ver.outputs.tag }}
+          generate_release_notes: true
+          files: ${{ steps.installer.outputs.path }}
