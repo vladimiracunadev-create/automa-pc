@@ -34,7 +34,7 @@ dependencies = [
     "pytesseract>=0.3.10,<1",
     "pyperclip>=1.8.2,<2",
     "PyGetWindow>=0.0.9,<1",
-    "pywebview>=5.4,<6",
+    "pywebview>=5.4,<7",
 ]
 
 [project.optional-dependencies]
