@@ -40,7 +40,7 @@ No ejecuta acciones ni escribe en SQLite.
 ## Suite Pytest
 
 ```bash
-pytest                                # toda la suite (77 tests al cierre de 0.2.0)
+pytest                                # toda la suite (150 tests al cierre de 0.3.0)
 pytest -m "not integration"           # sólo unitarios, rápido
 pytest -k template                    # tests de un area especifica
 pytest --cov=engine --cov=actions     # con cobertura

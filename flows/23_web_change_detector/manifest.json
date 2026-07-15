@@ -1,0 +1,60 @@
+{
+  "id": "web_change_detector",
+  "name": "Detector de cambios en página web",
+  "family": "navegador",
+  "description": "Vigila una página: extrae el contenido, calcula SHA-256 del texto y lo compara contra la corrida anterior (tracking persistente en data/web_watch/, mismo patrón que el caso 07). La primera corrida establece la línea base; las siguientes disparan notify.send solo si el contenido cambió. Ideal para vigilar precios, tablones de anuncios o fechas de publicación. Por defecto vigila data/web/demo_page.html — editar el HTML y volver a correr demuestra la detección. ~2-4s.",
+  "steps": [
+    {
+      "id": "extract_and_track",
+      "action": "browser.extract_content",
+      "params": {
+        "target": "{{ target_url }}",
+        "track_state_path": "{{ state_path }}",
+        "wait_seconds": "{{ wait_seconds }}"
+      },
+      "save_as": "content",
+      "retries": 1
+    },
+    {
+      "id": "evaluate_change",
+      "action": "rules.evaluate",
+      "params": {
+        "input_data": {"content": "{{ content }}"},
+        "default_status": "ok",
+        "rules": [
+          {"id": "contenido_cambio", "path": "content.changed", "operator": "eq", "value": true, "status": "alerta", "message": "El contenido de la página cambió respecto a la corrida anterior."},
+          {"id": "primera_corrida", "path": "content.first_run", "operator": "eq", "value": true, "status": "baseline", "message": "Primera corrida: línea base establecida."}
+        ]
+      },
+      "save_as": "decision"
+    },
+    {
+      "id": "notify_change",
+      "action": "notify.send",
+      "params": {
+        "message": "⚠️ Cambio detectado en {{ target_url }} · hash {{ content.content_hash }} (anterior: {{ content.previous_value }})",
+        "backend": "{{ notify_backend }}",
+        "target": "{{ notify_target }}"
+      },
+      "save_as": "notification",
+      "when": {"path": "decision.status", "operator": "eq", "value": "alerta"}
+    },
+    {
+      "id": "write_report",
+      "action": "filesystem.write_json",
+      "params": {
+        "path": "output/reports/web_change_{now}.json",
+        "data": {
+          "url": "{{ content.url }}",
+          "title": "{{ content.title }}",
+          "content_hash": "{{ content.content_hash }}",
+          "first_run": "{{ content.first_run }}",
+          "changed": "{{ content.changed }}",
+          "previous_value": "{{ content.previous_value }}",
+          "decision": "{{ decision }}"
+        }
+      },
+      "save_as": "report"
+    }
+  ]
+}

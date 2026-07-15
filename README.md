@@ -13,17 +13,17 @@
 ![Playwright](https://img.shields.io/badge/Playwright-headless%20%2B%20visible-2EAD33?logo=playwright&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-historial-003B57?logo=sqlite&logoColor=white)
 ![uv](https://img.shields.io/badge/packaging-uv-DE5FE9?logo=astral&logoColor=white)
-![pytest](https://img.shields.io/badge/tests-115%20pytest-3DA639?logo=pytest&logoColor=white)
+![pytest](https://img.shields.io/badge/tests-150%20pytest-3DA639?logo=pytest&logoColor=white)
 ![Local First](https://img.shields.io/badge/local--first-sí-2D7A66)
 
 [![CI](https://github.com/vladimiracunadev-create/automa-pc/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/vladimiracunadev-create/automa-pc/actions/workflows/ci.yml)
 [![Security](https://github.com/vladimiracunadev-create/automa-pc/actions/workflows/security.yml/badge.svg?branch=main)](https://github.com/vladimiracunadev-create/automa-pc/actions/workflows/security.yml)
 [![Workflow security](https://github.com/vladimiracunadev-create/automa-pc/actions/workflows/workflow-security.yml/badge.svg?branch=main)](https://github.com/vladimiracunadev-create/automa-pc/actions/workflows/workflow-security.yml)
 [![License](https://img.shields.io/badge/license-MIT-15803d.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.2.0-0f766e)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.3.0-0f766e)](CHANGELOG.md)
 [![Security policy](https://img.shields.io/badge/security-policy-7c3aed.svg)](SECURITY.md)
 [![Website](https://img.shields.io/badge/website-vladimiracunadev--create.github.io%2Fautoma--pc-2dd4bf.svg)](https://vladimiracunadev-create.github.io/automa-pc/)
-[![Download](https://img.shields.io/badge/download-Automa--Setup--v0.2.0.exe-14b8a6.svg)](https://github.com/vladimiracunadev-create/automa-pc/releases/latest)
+[![Download](https://img.shields.io/badge/download-Automa--Setup--v0.3.0.exe-14b8a6.svg)](https://github.com/vladimiracunadev-create/automa-pc/releases/latest)
 
 </div>
 
@@ -42,7 +42,7 @@ El objetivo a largo plazo: tener control declarativo sobre tareas operativas rea
 
 ---
 
-## 🗂️ Catálogo actual · 20 flows operativos
+## 🗂️ Catálogo actual · 27 flows operativos
 
 Clasificados por su nivel de interacción con el sistema. Hoja de ruta completa en [docs/ROADMAP.md](docs/ROADMAP.md).
 
@@ -66,6 +66,20 @@ Clasificados por su nivel de interacción con el sistema. Hoja de ruta completa 
 | **`🛡️ 18_powershell_audit`** | sistema | Ejecuta un comando PowerShell de allowlist read-only y guarda stdout/stderr/exit_code a JSON. |
 | **`🪟 19_taskbar_capture`** | pantalla | PNG solo de la franja inferior (barra de tareas + system tray). |
 | **`🔇 20_volume_mute_toggle`** | sistema | Togglea el mute del audio maestro (tecla multimedia `volumemute`). |
+
+### 🕸️ Extracción y vigilancia web (leen el DOM renderizado como datos)
+
+Familia nueva en v0.3.0: Chromium headless que **lee** la página (no solo la fotografía). Todos corren offline por defecto contra los HTML de demo del repo (`data/web/`).
+
+| Caso | Familia | Qué hace efectivamente |
+| --- | --- | --- |
+| **`🕸️ 21_web_content_extract`** | navegador | Extrae título, texto visible, links absolutos, metadatos y tablas de una URL — con evidencia PNG opcional. Base de la familia. |
+| **`🗺️ 22_web_site_map`** | navegador | Crawl BFS **acotado y determinista** (`max_pages`/`max_depth`, mismo dominio, respeta robots.txt) → inventario de páginas con profundidad y hash. |
+| **`🔔 23_web_change_detector`** | navegador | Vigila una página: SHA-256 del texto vs corrida anterior (tracking persistente) → `notify.send` **solo si cambió**. |
+| **`🔗 24_web_link_audit`** | navegador | Extrae los links de una página y verifica cada uno (`http.check_urls`: HEAD + fallback GET) → alerta si hay rotos. |
+| **`📊 25_web_table_extract`** | navegador | Convierte cada `<table>` del DOM en CSV + JSON — datasets desde cualquier página, incluso tablas generadas por JS. |
+| **`📈 26_web_value_monitor`** | navegador | Lee **un valor puntual** vía selector CSS, lo parsea a número y alerta si cruza umbral o cambió — sin falsos positivos del resto de la página. |
+| **`🗄️ 27_web_page_archive`** | navegador | Evidencia verificable: Markdown + PNG full-page + JSON con SHA-256 de qué decía una página en un momento dado. |
 
 ### 🟡 Utilidades sobre el equipo (solo lectura · solo JSON)
 
@@ -160,7 +174,7 @@ flowchart LR
     Schema["🧪 schemas/manifest.schema.json"] --> Validator["validate_project.py"]
     Config["⚙️ configs/*.json + context_overrides API"] --> Orchestrator
     Sandbox["🛡️ SandboxPolicy"] --> Orchestrator
-    Orchestrator --> Registry["LazyActionRegistry · 33 acciones"]
+    Orchestrator --> Registry["LazyActionRegistry · 36 acciones"]
     Registry --> Builtin["📦 actions/* (mss · psutil · playwright · pyautogui)"]
     Orchestrator --> DB["💾 db/runs.db"]
     Orchestrator --> Output["🖼️ output/screenshots + reports"]
@@ -171,7 +185,7 @@ flowchart LR
 
 ---
 
-## 📊 Estado del producto · v0.4.0
+## 📊 Estado del producto · v0.3.0
 
 | Capa | Estado | Evidencia |
 | --- | --- | --- |
@@ -184,9 +198,10 @@ flowchart LR
 | Webhooks IN | 🟢 Operativo | `POST /api/hook/<folder>` con `AUTOMA_WEBHOOK_TOKEN` |
 | Plugins de terceros (entry-points) | 🟢 Operativo | [engine/action_registry.py](engine/action_registry.py) |
 | **Casos avanzados (ventana real)** | 🟢 16 flows · 01 02 07–20 | [flows/](flows) |
+| **Casos de extracción/vigilancia web** | 🟢 7 flows · 21–27 | [flows/](flows), [actions/browser_extract.py](actions/browser_extract.py) |
 | **Casos utilitarios (solo JSON)** | 🟡 4 flows · 03 04 05 06 | mínimo aceptable, no foco |
-| **App de escritorio (instalador Windows)** | 🟢 v0.2.0 | [installer/](installer), [release.yml](.github/workflows/release.yml) |
-| Suite pytest | 🟢 115 verde | [tests/](tests) |
+| **App de escritorio (instalador Windows)** | 🟢 v0.3.0 | [installer/](installer), [release.yml](.github/workflows/release.yml) |
+| Suite pytest | 🟢 150 verde | [tests/](tests) |
 | CI: lint + tests + smoke + security + docs | 🟢 Operativo | [.github/workflows/](.github/workflows) |
 | CI hardening (SHA pin + zizmor + Trojan Source) | 🟢 Operativo | [SECURITY.md](SECURITY.md) §CI · [workflow-security.yml](.github/workflows/workflow-security.yml) |
 | Multiusuario / RBAC | 🔴 No | un operador local |
@@ -265,9 +280,9 @@ Política de reporte de vulnerabilidades también en [SECURITY.md](SECURITY.md).
 ## ✅ Validación local antes de pushear
 
 ```bash
-uv run pytest                          # 115 tests
+uv run pytest                          # 150 tests
 uv run ruff check .                    # lint
-uv run python scripts/validate_project.py   # JSON Schema + acciones (20 flows · 33 acciones)
+uv run python scripts/validate_project.py   # JSON Schema + acciones (27 flows · 36 acciones)
 ```
 
 Las tres deben pasar. CI corre lo mismo + `security.yml` (CodeQL `security-extended`, detect-secrets sobre filesystem **e historial**, Trojan Source CVE-2021-42574, ofuscación, exfiltración, pip-audit) + `workflow-security.yml` (actionlint + zizmor + pin-check sobre los propios YAML) + `markdown-docs.yml` (links rotos) + `dependency-hygiene.yml`.
@@ -316,10 +331,10 @@ Toda acción third-party va pinned a SHA — política completa en [SECURITY.md]
 /app          🖥️  Panel local + API JSON
 /actions      📦 mss · psutil · playwright · pyautogui · webbrowser · ...
 /engine       ⚙️  Motor: orquestador · sandbox · scheduler · cron · métricas · secretos
-/flows        📋 20 casos operativos
+/flows        📋 27 casos operativos
 /installer    📦 PyInstaller spec + Inno Setup script + build helper
 /data
-  /web        🌐 HTML local (form_demo · control_page)
+  /web        🌐 HTML local (form_demo · control_page · demo_page · site_demo)
   /seeds      🧬 100 registros del flow 07 + tracking de usados
   /inbox      📥 Carpeta de ejemplo para flow 03/04
 /configs      ⚙️  Contexto persistido por flow

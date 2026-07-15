@@ -1,0 +1,7 @@
+{
+  "target_url": "data/web/demo_page.html",
+  "include_tables": true,
+  "max_links": 100,
+  "wait_seconds": 0.5,
+  "take_screenshot": true
+}

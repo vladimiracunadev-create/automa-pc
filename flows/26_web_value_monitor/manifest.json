@@ -1,0 +1,64 @@
+{
+  "id": "web_value_monitor",
+  "name": "Monitor de valor web con umbral",
+  "family": "navegador",
+  "description": "Vigilancia quirúrgica: lee UN valor puntual de una página vía selector CSS (precio, stock, versión publicada), lo parsea a número, lo compara contra un umbral del manifest y contra el valor de la corrida anterior (tracking persistente). Notifica solo si cruza el umbral o cambió. A diferencia del caso 23 (página completa), un banner rotativo no genera falsos positivos: solo importa el elemento vigilado. Por defecto vigila #precio en data/web/demo_page.html — offline. ~2-4s.",
+  "steps": [
+    {
+      "id": "read_value",
+      "action": "browser.extract_content",
+      "params": {
+        "target": "{{ target_url }}",
+        "selector": "{{ selector }}",
+        "parse_number": true,
+        "track_state_path": "{{ state_path }}",
+        "wait_seconds": "{{ wait_seconds }}"
+      },
+      "save_as": "reading",
+      "retries": 1
+    },
+    {
+      "id": "evaluate_value",
+      "action": "rules.evaluate",
+      "params": {
+        "input_data": {"reading": "{{ reading }}"},
+        "default_status": "ok",
+        "rules": [
+          {"id": "selector_no_encontrado", "path": "reading.selector_found", "operator": "eq", "value": false, "status": "error", "message": "El selector CSS no existe en la página — revisar si cambió el HTML."},
+          {"id": "valor_sobre_umbral", "path": "reading.selector_number", "operator": "gt", "value": "{{ threshold }}", "status": "alerta", "message": "El valor vigilado supera el umbral."},
+          {"id": "valor_cambio", "path": "reading.changed", "operator": "eq", "value": true, "status": "aviso", "message": "El valor vigilado cambió respecto a la corrida anterior."}
+        ]
+      },
+      "save_as": "decision"
+    },
+    {
+      "id": "notify_value",
+      "action": "notify.send",
+      "params": {
+        "message": "📈 Monitor {{ target_url }} · selector {{ selector }} = {{ reading.selector_value }} (anterior: {{ reading.previous_value }}) · status: {{ decision.status }}",
+        "backend": "{{ notify_backend }}",
+        "target": "{{ notify_target }}"
+      },
+      "save_as": "notification",
+      "when": {"path": "decision.status", "operator": "ne", "value": "ok"}
+    },
+    {
+      "id": "write_report",
+      "action": "filesystem.write_json",
+      "params": {
+        "path": "output/reports/value_monitor_{now}.json",
+        "data": {
+          "url": "{{ reading.url }}",
+          "selector": "{{ reading.selector }}",
+          "selector_value": "{{ reading.selector_value }}",
+          "selector_number": "{{ reading.selector_number }}",
+          "previous_value": "{{ reading.previous_value }}",
+          "first_run": "{{ reading.first_run }}",
+          "changed": "{{ reading.changed }}",
+          "decision": "{{ decision }}"
+        }
+      },
+      "save_as": "report"
+    }
+  ]
+}

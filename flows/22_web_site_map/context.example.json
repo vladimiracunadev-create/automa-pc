@@ -1,0 +1,9 @@
+{
+  "start_url": "data/web/site_demo/index.html",
+  "max_pages": 10,
+  "max_depth": 2,
+  "same_domain_only": true,
+  "delay_seconds": 0.2,
+  "respect_robots": true,
+  "wait_seconds": 0.2
+}

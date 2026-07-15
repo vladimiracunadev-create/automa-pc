@@ -1,0 +1,41 @@
+{
+  "id": "web_content_extract",
+  "name": "Extractor de contenido web",
+  "family": "navegador",
+  "description": "Abre una URL (o HTML local) con Chromium headless y LEE el DOM renderizado: título, texto visible, links absolutos deduplicados, metadatos y tablas. Persiste el contenido como JSON y opcionalmente deja un PNG de evidencia. Funciona con páginas que dependen de JavaScript (a diferencia de un GET plano). Por defecto apunta a data/web/demo_page.html — offline y determinista. ~2-4s.",
+  "steps": [
+    {
+      "id": "extract_page",
+      "action": "browser.extract_content",
+      "params": {
+        "target": "{{ target_url }}",
+        "include_tables": "{{ include_tables }}",
+        "max_links": "{{ max_links }}",
+        "wait_seconds": "{{ wait_seconds }}"
+      },
+      "save_as": "content",
+      "retries": 1
+    },
+    {
+      "id": "capture_evidence",
+      "action": "browser.capture_page",
+      "params": {
+        "target": "{{ target_url }}",
+        "output_path": "output/screenshots/web_content_{now}.png",
+        "full_page": true,
+        "wait_seconds": "{{ wait_seconds }}"
+      },
+      "save_as": "evidence",
+      "when": {"path": "take_screenshot", "operator": "truthy"}
+    },
+    {
+      "id": "write_report",
+      "action": "filesystem.write_json",
+      "params": {
+        "path": "output/reports/web_content_{now}.json",
+        "data": {"content": "{{ content }}"}
+      },
+      "save_as": "report"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "id": "web_link_audit",
+  "name": "Auditor de links rotos",
+  "family": "navegador",
+  "description": "Extrae los links de una página con Chromium headless y verifica cada uno con http.check_urls: HEAD con redirects para http(s) (fallback GET si el server no soporta HEAD), existencia en disco para file://, y mailto/tel quedan como skipped. rules.evaluate marca alerta si hay al menos un link roto. Por defecto audita el mini-sitio local data/web/site_demo, que incluye un link roto a propósito — la demo muestra la detección sin internet. ~2-5s.",
+  "steps": [
+    {
+      "id": "extract_links",
+      "action": "browser.extract_content",
+      "params": {
+        "target": "{{ target_url }}",
+        "max_links": "{{ max_links }}",
+        "wait_seconds": "{{ wait_seconds }}"
+      },
+      "save_as": "content",
+      "retries": 1
+    },
+    {
+      "id": "check_links",
+      "action": "http.check_urls",
+      "params": {
+        "urls": "{{ content.link_urls }}",
+        "timeout": "{{ timeout }}",
+        "max_urls": "{{ max_links }}"
+      },
+      "save_as": "link_report"
+    },
+    {
+      "id": "evaluate_links",
+      "action": "rules.evaluate",
+      "params": {
+        "input_data": {"links": "{{ link_report }}"},
+        "default_status": "ok",
+        "rules": [
+          {"id": "links_rotos", "path": "links.broken_count", "operator": "gt", "value": 0, "status": "alerta", "message": "La página tiene links rotos."}
+        ]
+      },
+      "save_as": "decision"
+    },
+    {
+      "id": "write_report",
+      "action": "filesystem.write_json",
+      "params": {
+        "path": "output/reports/link_audit_{now}.json",
+        "data": {
+          "page": "{{ content.url }}",
+          "title": "{{ content.title }}",
+          "link_report": "{{ link_report }}",
+          "decision": "{{ decision }}"
+        }
+      },
+      "save_as": "report"
+    }
+  ]
+}

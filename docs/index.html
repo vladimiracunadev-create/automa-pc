@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Automa — Control local de Windows con un click</title>
-  <meta name="description" content="Panel local que ejecuta acciones reales sobre tu Windows desde cards. 20 flows declarativos · sin IA · sin nube · Python puro. Instalador .exe nativo.">
+  <meta name="description" content="Panel local que ejecuta acciones reales sobre tu Windows desde cards. 27 flows declarativos · sin IA · sin nube · Python puro. Instalador .exe nativo.">
   <meta name="theme-color" content="#0f172a">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='80' font-size='80'%3E%F0%9F%A4%96%3C/text%3E%3C/svg%3E">
 
   <!-- Open Graph -->
   <meta property="og:title" content="Automa — Control local de Windows con un click">
-  <meta property="og:description" content="20 flows declarativos JSON · sin IA · sin nube · instalador .exe nativo">
+  <meta property="og:description" content="27 flows declarativos JSON · sin IA · sin nube · instalador .exe nativo">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://vladimiracunadev-create.github.io/automa-pc/">
 
@@ -217,7 +217,7 @@
   <header class="hero">
     <div class="container hero-grid">
       <div>
-        <span class="badge">v0.2.0 · 20 flows · sin IA · sin nube</span>
+        <span class="badge">v0.3.0 · 27 flows · sin IA · sin nube</span>
         <h1>Control local de Windows con un click.</h1>
         <p class="lede">
           Automa es un <strong>panel local</strong> con cards. Cada card hace algo real en tu Windows:
@@ -234,13 +234,15 @@
         </div>
       </div>
       <div class="hero-visual" aria-hidden="true">
-        <h3>Panel · 20 flows</h3>
+        <h3>Panel · 27 flows</h3>
         <div class="flow-grid-mini">
           <div class="flow-mini">📷</div><div class="flow-mini">🌐</div><div class="flow-mini">📁</div><div class="flow-mini">📄</div>
           <div class="flow-mini">🖥️</div><div class="flow-mini">⚙️</div><div class="flow-mini">📋</div><div class="flow-mini">🔒</div>
           <div class="flow-mini">🪟</div><div class="flow-mini">📂</div><div class="flow-mini">⚙️</div><div class="flow-mini">👁️</div>
           <div class="flow-mini">📝</div><div class="flow-mini">⌨️</div><div class="flow-mini">📋</div><div class="flow-mini">🖼️</div>
           <div class="flow-mini">📊</div><div class="flow-mini">🛡️</div><div class="flow-mini">🪟</div><div class="flow-mini">🔇</div>
+          <div class="flow-mini">🕸️</div><div class="flow-mini">🗺️</div><div class="flow-mini">🔔</div><div class="flow-mini">🔗</div>
+          <div class="flow-mini">📊</div><div class="flow-mini">📈</div><div class="flow-mini">🗄️</div>
         </div>
       </div>
     </div>
@@ -317,7 +319,7 @@ uv run automa-desktop</code></pre>
 
   <section>
     <div class="container">
-      <h2>Catálogo · 20 flows</h2>
+      <h2>Catálogo · 27 flows</h2>
       <p class="sub">Cada flow es una carpeta en <code>flows/NN_slug/</code> con manifest JSON, contexto de ejemplo y README detallado.</p>
 
       <table class="catalog-table">
@@ -345,6 +347,13 @@ uv run automa-desktop</code></pre>
           <tr><td>18</td><td><span class="slug">🛡️ powershell_audit</span></td><td><span class="pill pill-fam-sistema">sistema</span></td><td>PowerShell con allowlist read-only.</td></tr>
           <tr><td>19</td><td><span class="slug">🪟 taskbar_capture</span></td><td><span class="pill pill-fam-pantalla">pantalla</span></td><td>PNG solo de la barra de tareas.</td></tr>
           <tr><td>20</td><td><span class="slug">🔇 volume_mute_toggle</span></td><td><span class="pill pill-fam-sistema">sistema</span></td><td>Togglea el mute (tecla multimedia).</td></tr>
+          <tr><td>21</td><td><span class="slug">🕸️ web_content_extract</span></td><td><span class="pill pill-fam-navegador">navegador</span></td><td>Lee el DOM como datos: título, texto, links, metadatos y tablas.</td></tr>
+          <tr><td>22</td><td><span class="slug">🗺️ web_site_map</span></td><td><span class="pill pill-fam-navegador">navegador</span></td><td>Crawl BFS acotado (max_pages/max_depth) que respeta robots.txt.</td></tr>
+          <tr><td>23</td><td><span class="slug">🔔 web_change_detector</span></td><td><span class="pill pill-fam-navegador">navegador</span></td><td>Vigila una página y notifica solo si el contenido cambió.</td></tr>
+          <tr><td>24</td><td><span class="slug">🔗 web_link_audit</span></td><td><span class="pill pill-fam-navegador">navegador</span></td><td>Verifica cada link de una página y alerta si hay rotos.</td></tr>
+          <tr><td>25</td><td><span class="slug">📊 web_table_extract</span></td><td><span class="pill pill-fam-navegador">navegador</span></td><td>Cada tabla HTML → CSV + JSON, incluso generadas por JS.</td></tr>
+          <tr><td>26</td><td><span class="slug">📈 web_value_monitor</span></td><td><span class="pill pill-fam-navegador">navegador</span></td><td>Un valor vía selector CSS contra umbral + corrida anterior.</td></tr>
+          <tr><td>27</td><td><span class="slug">🗄️ web_page_archive</span></td><td><span class="pill pill-fam-navegador">navegador</span></td><td>Archiva una página: Markdown + PNG + JSON con SHA-256.</td></tr>
         </tbody>
       </table>
     </div>

@@ -1,0 +1,32 @@
+{
+  "id": "web_site_map",
+  "name": "Mapa de sitio acotado (crawl BFS)",
+  "family": "navegador",
+  "description": "Recorre un sitio con BFS determinista: parte de start_url, sigue los links del mismo dominio en orden de aparición, sin repetir, acotado por max_pages y max_depth (nunca crawl abierto). Respeta robots.txt en http(s) y reporta lo bloqueado. Devuelve el inventario de páginas: URL, profundidad, título, cantidad de links, tamaño del texto y hash. Por defecto recorre el mini-sitio local data/web/site_demo — offline. ~3-8s.",
+  "steps": [
+    {
+      "id": "crawl",
+      "action": "browser.crawl_site",
+      "params": {
+        "start_url": "{{ start_url }}",
+        "max_pages": "{{ max_pages }}",
+        "max_depth": "{{ max_depth }}",
+        "same_domain_only": "{{ same_domain_only }}",
+        "delay_seconds": "{{ delay_seconds }}",
+        "respect_robots": "{{ respect_robots }}",
+        "wait_seconds": "{{ wait_seconds }}"
+      },
+      "save_as": "site_map",
+      "retries": 1
+    },
+    {
+      "id": "write_report",
+      "action": "filesystem.write_json",
+      "params": {
+        "path": "output/reports/site_map_{now}.json",
+        "data": {"site_map": "{{ site_map }}"}
+      },
+      "save_as": "report"
+    }
+  ]
+}

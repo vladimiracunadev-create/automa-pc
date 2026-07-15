@@ -10,7 +10,7 @@ La documentación usa dos niveles:
 - **Caso**: flow ejecutable con manifest, contexto y README propio.
 
 > [!IMPORTANT]
-> Cada flow tiene un README con la lista exhaustiva de pasos, requisitos, limitaciones y control. **No son demos** — son procesos reales auditables. Los 20 fueron probados end-to-end en Windows 11 + Python 3.12.
+> Cada flow tiene un README con la lista exhaustiva de pasos, requisitos, limitaciones y control. **No son demos** — son procesos reales auditables. Los 27 fueron probados end-to-end en Windows 11 + Python 3.12.
 
 ---
 
@@ -51,6 +51,13 @@ La documentación usa dos niveles:
 | 18 | 🛡️ [powershell_audit](../flows/18_powershell_audit/README.md) | sistema | ✅ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | PowerShell con allowlist read-only |
 | 19 | 🪟 [taskbar_capture](../flows/19_taskbar_capture/README.md) | pantalla | ✅ | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | Recorte parcial del monitor |
 | 20 | 🔇 [volume_mute_toggle](../flows/20_volume_mute_toggle/README.md) | sistema | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | Tecla multimedia `volumemute` |
+| 21 | 🕸️ [web_content_extract](../flows/21_web_content_extract/README.md) | navegador | ✅ | ✅ | ✅ | ✅ | ⚠️ si URL externa | ❌ | ❌ | Lee el DOM como datos (Playwright) |
+| 22 | 🗺️ [web_site_map](../flows/22_web_site_map/README.md) | navegador | ✅ | ✅ | ✅ | ✅ | ⚠️ si sitio externo | ❌ | ❌ | Crawl BFS acotado + robots.txt |
+| 23 | 🔔 [web_change_detector](../flows/23_web_change_detector/README.md) | navegador | ✅ | ✅ | ✅ | ✅ | ⚠️ si URL externa | ❌ | ❌ | Hash vs corrida anterior + notify |
+| 24 | 🔗 [web_link_audit](../flows/24_web_link_audit/README.md) | navegador | ✅ | ✅ | ✅ | ✅ | ⚠️ si links externos | ❌ | ❌ | HEAD/GET por link + alerta |
+| 25 | 📊 [web_table_extract](../flows/25_web_table_extract/README.md) | navegador | ✅ | ✅ | ✅ | ✅ | ⚠️ si URL externa | ❌ | ❌ | Tablas HTML → CSV + JSON |
+| 26 | 📈 [web_value_monitor](../flows/26_web_value_monitor/README.md) | navegador | ✅ | ✅ | ✅ | ✅ | ⚠️ si URL externa | ❌ | ❌ | Selector CSS + umbral + tracking |
+| 27 | 🗄️ [web_page_archive](../flows/27_web_page_archive/README.md) | navegador | ✅ | ✅ | ✅ | ✅ | ⚠️ si URL externa | ❌ | ❌ | Markdown + PNG + SHA-256 |
 
 Leyenda: ✅ funciona · ❌ NO requerido · ⚠️ requerido condicionalmente · 🟢🟡🔴 nivel de riesgo.
 

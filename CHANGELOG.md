@@ -5,6 +5,40 @@ Todas las versiones notables de Automa se documentan acá. El formato sigue
 
 ## [Unreleased]
 
+## [0.3.0] · 2026-07-15
+
+### 🕸️ Familia de extracción y vigilancia web · 7 flows nuevos (21–27)
+
+Chromium headless que **lee** el DOM como datos (no solo lo fotografía). Todos los flows corren offline por defecto contra HTML de demo del propio repo (`data/web/demo_page.html` y el mini-sitio `data/web/site_demo/`), así la demo es determinista y sin internet.
+
+| # | Slug | Qué hace |
+| --- | --- | --- |
+| 21 | `web_content_extract` | Extrae título, texto, links absolutos, metadatos y tablas de una URL + PNG de evidencia opcional. |
+| 22 | `web_site_map` | Crawl BFS acotado (`max_pages`/`max_depth`, mismo dominio, respeta robots.txt) → inventario de páginas. |
+| 23 | `web_change_detector` | SHA-256 del texto vs corrida anterior (tracking persistente en `data/web_watch/`) → `notify.send` solo si cambió. |
+| 24 | `web_link_audit` | Verifica cada link de una página (HEAD + fallback GET; `file://` por existencia) → alerta si hay rotos. |
+| 25 | `web_table_extract` | Cada `<table>` del DOM → `table_NN.csv` + JSON. Funciona con tablas generadas por JS. |
+| 26 | `web_value_monitor` | Un valor puntual vía selector CSS, parseado a número, contra umbral y contra la corrida anterior. |
+| 27 | `web_page_archive` | Archivado con evidencia: Markdown + PNG full-page + JSON con SHA-256. |
+
+Los casos 23 y 24 **estrenan** las familias `notify` y `http` en flows (las acciones existían sin caso que las usara).
+
+### 📦 3 acciones nuevas (33 → 36)
+
+- [`browser.extract_content`](actions/browser_extract.py): título, texto normalizado, links (deduplicados, en orden de aparición, con cota `max_links`), metadatos, tablas, valor por selector CSS con parseo numérico (`$ 1.499,90` → `1499.9`), hash SHA-256, tracking persistente (`first_run`/`changed`/`previous_value`), export Markdown y CSV.
+- [`browser.crawl_site`](actions/browser_extract.py): BFS determinista con cotas explícitas, filtro de dominio, `robots.txt` por host (`RobotsCache`), delay de cortesía, y recuperación ante navegación fallida (un link roto no aborta el crawl). Reporta `truncated`/`errors`/`robots_blocked` — nunca truncado silencioso.
+- [`http.check_urls`](actions/http_actions.py): verificación de lista de URLs en orden de entrada — HEAD con redirects (fallback GET ante 405/501), `file://` por existencia en disco, `mailto:`/`tel:` como `skipped`.
+
+### ⚙️ Motor: placeholders con punto dentro de strings
+
+`engine/template.py` ahora resuelve claves aplanadas dentro de strings compuestos — `"hash {content.content_hash}"` funciona en mensajes de notify. Antes, `str.format_map` crasheaba con `AttributeError` ante cualquier clave con punto embebida. Además, un placeholder exacto que resuelve a `None` devuelve `None` real (JSON null) en vez de caer al render de string, y las llaves que no son placeholders (JSON embebido en comandos) quedan intactas. Cambio aditivo: los 20 flows previos rinden idéntico.
+
+### 🧪 Tests y validación
+
+- Suite: **150 tests pasando** (era 119). Los 31 nuevos cubren toda la lógica de la familia web **sin Playwright** (FakePage/fetcher fake): links, hash, parseo numérico, tracking, markdown, CSV, BFS con cotas/errores/robots, `check_urls`. Cobertura 58.9% (gate en 54%).
+- Ruff limpio, schema validation OK (**27 flows · 36 acciones registradas**).
+- Los 7 flows ejecutados de punta a punta en Windows real: crawl con profundidades 0/1/1/2 correctas, link roto detectado (`broken_count=1` → alerta), valor `$ 1.499,90` parseado a `1499.9` sobre umbral 1000 → notificación emitida, ciclo baseline→cambio→alerta verificado.
+
 ## [0.2.1] · 2026-06-18
 
 ### 🐛 Fix · Bundle: `PermissionError` al escribir en `C:\Program Files\Automa\_internal\db`

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Catálogo demo · Automa</title>
+  <meta name="description" content="Página local de demostración para los flows de extracción web (casos 21, 23, 25, 26, 27).">
+  <meta name="keywords" content="automa, demo, extraccion, rpa">
+  <meta property="og:title" content="Catálogo demo Automa">
+</head>
+<body>
+  <h1>Catálogo de productos (demo)</h1>
+  <p>Esta página existe para que los flows de extracción web corran <strong>offline y deterministas</strong>:
+     tiene título, metadatos, texto, links, una tabla y un valor puntual con id para selector CSS.</p>
+
+  <h2 id="valor">Valor vigilado</h2>
+  <p>Precio del plan Pro: <span id="precio">$ 1.499,90</span> (editar este valor y volver a correr
+     el caso 23 o 26 dispara la detección de cambio).</p>
+
+  <h2 id="tabla">Inventario</h2>
+  <table>
+    <tr><th>Producto</th><th>Categoría</th><th>Stock</th><th>Precio</th></tr>
+    <tr><td>Teclado mecánico</td><td>Periféricos</td><td>12</td><td>$ 89.990</td></tr>
+    <tr><td>Monitor 27"</td><td>Pantallas</td><td>4</td><td>$ 249.990</td></tr>
+    <tr><td>Dock USB-C</td><td>Conectividad</td><td>9</td><td>$ 59.990</td></tr>
+    <tr><td>Webcam FHD</td><td>Video</td><td>0</td><td>$ 39.990</td></tr>
+  </table>
+
+  <h2 id="links">Enlaces</h2>
+  <ul>
+    <li><a href="site_demo/index.html">Sitio demo (inicio)</a></li>
+    <li><a href="site_demo/page_a.html">Sitio demo · sección A</a></li>
+    <li><a href="site_demo/no_existe.html">Link roto (a propósito, para el caso 24)</a></li>
+    <li><a href="#tabla">Ancla interna (se ignora en la extracción)</a></li>
+    <li><a href="mailto:demo@example.com">Contacto (mailto, se reporta como skipped)</a></li>
+  </ul>
+</body>
+</html>

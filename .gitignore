@@ -17,10 +17,14 @@ state/*.json
 output/**/*.png
 output/**/*.json
 output/**/*.tmp
+output/**/*.md
+output/**/*.log
+output/**/*.csv
 secrets/*.json
 !secrets/.gitkeep
 .tmp*
 data/seeds/.used_indices.json
+data/web_watch/
 
 # Claude Code local worktrees y caches
 .claude/

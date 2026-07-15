@@ -1,0 +1,9 @@
+{
+  "target_url": "data/web/demo_page.html",
+  "selector": "#precio",
+  "threshold": 1000,
+  "state_path": "data/web_watch/precio_demo.json",
+  "wait_seconds": 0.5,
+  "notify_backend": "file",
+  "notify_target": "output/notifications/value_monitor.log"
+}

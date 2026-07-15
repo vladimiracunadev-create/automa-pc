@@ -20,9 +20,9 @@ Toda inversión nueva va a 🟢. La dirección: **operar componentes nativos de 
 
 ---
 
-## ✅ Catálogo actual · 20 flows
+## ✅ Catálogo actual · 27 flows
 
-Detalle completo en [README §Catálogo actual](../README.md#-catálogo-actual--20-flows-operativos) y [docs/FAMILIAS_Y_CASOS.md](FAMILIAS_Y_CASOS.md).
+Detalle completo en [README §Catálogo actual](../README.md#-catálogo-actual--27-flows-operativos) y [docs/FAMILIAS_Y_CASOS.md](FAMILIAS_Y_CASOS.md).
 
 | # | Slug | Nivel |
 | --- | --- | --- |
@@ -46,6 +46,13 @@ Detalle completo en [README §Catálogo actual](../README.md#-catálogo-actual--
 | 18 | `powershell_audit` | 🟢 |
 | 19 | `taskbar_capture` | 🟢 |
 | 20 | `volume_mute_toggle` | 🟢 |
+| 21 | `web_content_extract` | 🟢 |
+| 22 | `web_site_map` | 🟢 |
+| 23 | `web_change_detector` | 🟢 |
+| 24 | `web_link_audit` | 🟢 |
+| 25 | `web_table_extract` | 🟢 |
+| 26 | `web_value_monitor` | 🟢 |
+| 27 | `web_page_archive` | 🟢 |
 
 ---
 
@@ -93,6 +100,24 @@ Todas las acciones nuevas viven en sus módulos respectivos:
 
 > [!NOTE]
 > **Capacidad de atajos**: el panel mapea `Alt+1..Alt+=` (12 flows). A partir del flow 13 los nuevos casos siguen accesibles por click en su card del panel, pero **sin atajo Alt**. Cuando sumemos varios más sin atajo, evaluamos extender el mecanismo (`Alt+Shift+N`, paginar atajos por familia, …).
+
+---
+
+## 🕸️ Fase Web · Extracción y vigilancia de contenido (v0.3.0)
+
+Siete casos (21–27) que **leen el DOM renderizado como datos** con Chromium headless. Tres acciones nuevas: `browser.extract_content`, `browser.crawl_site`, `http.check_urls` (~400 LOC en [`actions/browser_extract.py`](../actions/browser_extract.py) y [`actions/http_actions.py`](../actions/http_actions.py)). Los casos 23 y 24 estrenan las familias `notify` y `http` en flows.
+
+| # | Slug | Qué hace en un clic |
+| --- | --- | --- |
+| 21 | `web_content_extract` | Título, texto, links, metadatos y tablas de una URL → JSON + PNG. |
+| 22 | `web_site_map` | Crawl BFS acotado (max_pages/max_depth, robots.txt) → inventario. |
+| 23 | `web_change_detector` | Hash vs corrida anterior → notifica solo si cambió. |
+| 24 | `web_link_audit` | Verifica cada link (HEAD/GET, file://) → alerta si hay rotos. |
+| 25 | `web_table_extract` | Cada `<table>` → CSV + JSON. |
+| 26 | `web_value_monitor` | Valor por selector CSS vs umbral + corrida anterior. |
+| 27 | `web_page_archive` | Markdown + PNG + JSON con SHA-256 (evidencia). |
+
+### Estado: 🟢 lanzado en v0.3.0
 
 ---
 
@@ -159,4 +184,4 @@ Abre un issue en GitHub con la plantilla:
 
 ---
 
-Última actualización: 2026-06-18 · Fase 1 y Fase 2 lanzadas (v0.2.0) · app de escritorio + instalador Windows publicados.
+Última actualización: 2026-07-15 · Fases 1, 2 y Web lanzadas (v0.3.0) · app de escritorio + instalador Windows publicados.

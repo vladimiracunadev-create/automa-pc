@@ -1,0 +1,35 @@
+{
+  "id": "web_table_extract",
+  "name": "Extractor de tablas web a dataset",
+  "family": "navegador",
+  "description": "Convierte las tablas HTML de una página en datos estructurados: cada <table> del DOM renderizado se extrae como matriz de celdas y se escribe como CSV (table_01.csv, table_02.csv, ...) más un JSON con todo. Al leer el DOM con Chromium no hay parsing frágil de HTML crudo y funciona con tablas generadas por JavaScript. Por defecto extrae la tabla de inventario de data/web/demo_page.html — offline. ~2-4s.",
+  "steps": [
+    {
+      "id": "extract_tables",
+      "action": "browser.extract_content",
+      "params": {
+        "target": "{{ target_url }}",
+        "include_tables": true,
+        "save_tables_dir": "output/reports/web_tables_{now}",
+        "wait_seconds": "{{ wait_seconds }}"
+      },
+      "save_as": "content",
+      "retries": 1
+    },
+    {
+      "id": "write_report",
+      "action": "filesystem.write_json",
+      "params": {
+        "path": "output/reports/web_tables_{now}/summary.json",
+        "data": {
+          "url": "{{ content.url }}",
+          "title": "{{ content.title }}",
+          "tables_count": "{{ content.tables_count }}",
+          "tables_csv_paths": "{{ content.tables_csv_paths }}",
+          "tables": "{{ content.tables }}"
+        }
+      },
+      "save_as": "report"
+    }
+  ]
+}

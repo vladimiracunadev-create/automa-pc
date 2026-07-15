@@ -1,0 +1,7 @@
+{
+  "target_url": "data/web/demo_page.html",
+  "state_path": "data/web_watch/demo_page.json",
+  "wait_seconds": 0.5,
+  "notify_backend": "file",
+  "notify_target": "output/notifications/web_changes.log"
+}

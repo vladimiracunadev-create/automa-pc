@@ -1,0 +1,49 @@
+{
+  "id": "web_page_archive",
+  "name": "Archivado offline de página web",
+  "family": "navegador",
+  "description": "Deja constancia verificable de qué decía una página en un momento dado: extrae el contenido y lo guarda como Markdown (título, metadatos, texto, tablas y links), toma un PNG full-page de evidencia visual y escribe un JSON de metadatos con el SHA-256 del texto. Los tres archivos comparten slug y timestamp en output/archive/. Por defecto archiva data/web/demo_page.html — offline. ~3-5s.",
+  "steps": [
+    {
+      "id": "extract_and_save_markdown",
+      "action": "browser.extract_content",
+      "params": {
+        "target": "{{ target_url }}",
+        "include_tables": true,
+        "save_markdown_path": "output/archive/{{ archive_slug }}_{now}.md",
+        "wait_seconds": "{{ wait_seconds }}"
+      },
+      "save_as": "content",
+      "retries": 1
+    },
+    {
+      "id": "capture_evidence",
+      "action": "browser.capture_page",
+      "params": {
+        "target": "{{ target_url }}",
+        "output_path": "output/archive/{{ archive_slug }}_{now}.png",
+        "full_page": true,
+        "wait_seconds": "{{ wait_seconds }}"
+      },
+      "save_as": "evidence",
+      "retries": 1
+    },
+    {
+      "id": "write_metadata",
+      "action": "filesystem.write_json",
+      "params": {
+        "path": "output/archive/{{ archive_slug }}_{now}.json",
+        "data": {
+          "url": "{{ content.url }}",
+          "title": "{{ content.title }}",
+          "content_hash": "{{ content.content_hash }}",
+          "text_chars": "{{ content.text_chars }}",
+          "links_count": "{{ content.links_count }}",
+          "markdown_path": "{{ content.markdown_path }}",
+          "screenshot_path": "{{ evidence.image_path }}"
+        }
+      },
+      "save_as": "metadata"
+    }
+  ]
+}

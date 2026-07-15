@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Sitio demo · Inicio</title>
+  <meta name="description" content="Raíz del mini-sitio local para el crawl acotado (caso 22) y el auditor de links (caso 24).">
+</head>
+<body>
+  <h1>Sitio demo — Inicio</h1>
+  <p>Mini-sitio de 4 páginas interconectadas para probar el crawl BFS acotado.
+     Profundidad desde aquí: A y B a depth 1, C a depth 2 (vía A).</p>
+  <nav>
+    <a href="page_a.html">Sección A</a>
+    <a href="page_b.html">Sección B</a>
+    <a href="no_existe.html">Link roto (a propósito)</a>
+    <a href="index.html">Inicio (self-link, se deduplica)</a>
+  </nav>
+</body>
+</html>

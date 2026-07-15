@@ -1,0 +1,6 @@
+{
+  "target_url": "data/web/site_demo/index.html",
+  "max_links": 100,
+  "timeout": 10,
+  "wait_seconds": 0.2
+}
