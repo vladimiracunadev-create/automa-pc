@@ -2,7 +2,7 @@
 # corte de la auditoría 2026-06-01. Para reproducibilidad estricta usar
 # `uv export` (lockfile en CI) — este archivo solo fija un piso seguro.
 Pillow>=12.2.0,<13
-psutil>=5.9.8,<7
+psutil>=5.9.8,<8
 requests>=2.32.2,<3
 mss>=9.0.1,<11
 pyautogui>=0.9.54,<1
