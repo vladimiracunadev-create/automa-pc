@@ -1,3 +1,23 @@
+"""Detección de los archivos que una corrida produjo de verdad.
+
+Recorre el estado de la corrida buscando cadenas que sean rutas de archivos
+existentes, para poblar ``runs.outputs_json`` y que el panel pueda mostrar
+miniaturas y enlaces de descarga.
+
+Tres filtros, cada uno con su motivo:
+
+1. **Longitud > 260 caracteres o con salto de línea** → no es una ruta. Además de
+   ser una heurística barata, evita ``OSError ENAMETOOLONG`` al llamar
+   ``Path.exists()`` sobre un JSON serializado en Linux.
+2. **Debe existir y ser un archivo**, no un directorio.
+3. **Debe estar bajo ``output/``.** Antes se aceptaba cualquier ruta existente, y
+   eso contaminaba la lista con archivos que el flow solo había *leído* — el
+   dropbox de entrada aparecía como si fuera una salida.
+
+``_output_root()`` resuelve ``Path('output')`` **relativo al directorio de
+trabajo**. Por eso ``installer/automa_entry.py`` hace ``os.chdir(data_dir())``
+en el bundle: sin ese cambio de directorio, los outputs no se detectarían.
+"""
 from __future__ import annotations
 
 from pathlib import Path

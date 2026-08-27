@@ -1,3 +1,26 @@
+"""Bucle de disparo de flows programados, con lock contra ejecución doble.
+
+Revisa la tabla ``schedules`` cada ``loop_sleep_seconds`` y lanza en un hilo
+daemon cada tarea vencida. Vive dentro del proceso del panel (arrancado al
+importar :mod:`app.server`) o como proceso propio vía ``automa scheduler``.
+
+Comportamientos que hay que conocer antes de depender de él:
+
+* **El error se traga por completo.** Una excepción del orquestador se captura
+  con ``pass`` para no matar el bucle, y ``mark_schedule_run`` se llama
+  **después** del ``except``: una tarea que falla siempre reprograma su siguiente
+  ejecución con total normalidad y **no genera ninguna alerta**. El fallo solo se
+  descubre mirando el histórico.
+* **El lock protege solo esta vía.** ``acquire_run_lock`` se invoca únicamente
+  desde :meth:`SchedulerService._run_job`. Las rutas del panel y del webhook no
+  lo usan, así que el mismo flow sí puede correr dos veces en paralelo desde el
+  panel.
+* **No hay liberación de locks al arrancar.** El ``finally`` libera el lock ante
+  una excepción, pero matar el proceso salta ese bloque y la fila queda para
+  siempre, bloqueando ese flow. Se libera a mano con ``force_release_lock``.
+* Todos los hilos son daemon: cerrar el proceso los mata sin esperar, dejando la
+  corrida en curso con ``status='running'`` de forma permanente.
+"""
 from __future__ import annotations
 
 import threading

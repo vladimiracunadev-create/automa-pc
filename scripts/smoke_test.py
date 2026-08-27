@@ -1,3 +1,23 @@
+"""Prueba de humo de extremo a extremo: motor, acciones, base y scheduler.
+
+Complementa a ``pytest``: en vez de aislar componentes, ejecuta tres flows reales
+del catálogo de principio a fin y comprueba que el sistema completo funciona
+—orquestador, acciones, SQLite, configuración y scheduler— sobre la instalación
+tal y como está.
+
+La CI lo corre en un job propio (``ci.yml``, job ``smoke``), después de que pase
+la matriz de pruebas.
+
+.. warning::
+
+   **Efecto secundario sobre el árbol de trabajo.** La llamada a
+   ``set_flow_config('03_folder_inventory', ...)`` reescribe
+   ``configs/03_folder_inventory.json``, que es un archivo **versionado**. Tras
+   ejecutar este script, ``git status`` puede marcarlo como modificado; se
+   restaura con ``git checkout -- configs/03_folder_inventory.json``.
+
+   Revise siempre ``git status`` antes de confirmar tras ejecutar el smoke test.
+"""
 from __future__ import annotations
 
 import json

@@ -1,3 +1,27 @@
+"""Registro perezoso de acciones: el puente entre un nombre y una función.
+
+Un manifest declara ``"action": "screen.capture_screenshot"``; este módulo lo
+convierte en la función Python que lo implementa, **importando su módulo solo
+cuando alguien la usa de verdad**. Es lo que evita cargar Playwright, psutil,
+Pillow y pyautogui en cada arranque del panel.
+
+Tres fuentes de registro, en orden de consulta:
+
+1. ``_BUILT_IN_ACTIONS`` — las 36 acciones del repositorio.
+2. ``register_callable`` — inyección directa, usada por las pruebas.
+3. Entry points del grupo ``automa.actions`` — acciones publicadas por paquetes
+   de terceros, cargadas de forma perezosa la primera vez que hace falta.
+
+Decisión de seguridad relevante: los entry points se incorporan con
+``setdefault``, de modo que **un paquete externo nunca puede sobrescribir una
+acción interna**.
+
+Aviso de mantenimiento: esta tabla y la sección
+``[project.entry-points."automa.actions"]`` de ``pyproject.toml`` deben mantenerse
+sincronizadas a mano, y hoy no lo están. Lo mismo vale para ``hiddenimports`` de
+``installer/automa.spec``: al ser ``import_module`` un import dinámico,
+PyInstaller no lo rastrea y una acción ausente de esa lista falta en el binario.
+"""
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable

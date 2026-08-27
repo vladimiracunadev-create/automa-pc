@@ -1,3 +1,25 @@
+"""Lectura del contrato de un flow: manifest y contexto.
+
+Convierte ``flows/<carpeta>/manifest.json`` en las dataclasses de
+:mod:`engine.models` y resuelve de dónde salen los valores del flow.
+
+Dos comportamientos que sorprenden y conviene tener presentes:
+
+* **El manifest NO se valida contra el JSON Schema aquí.** El schema solo lo
+  aplica ``scripts/validate_project.py`` en la CI. En ejecución, los campos
+  obligatorios se acceden con corchetes, así que un manifest incompleto produce
+  un ``KeyError`` crudo en vez de un mensaje del validador.
+* **``load_context`` devuelve la primera fuente que exista y descarta el resto.**
+  No hay mezcla de claves. Guardar la configuración desde el panel crea
+  ``configs/<carpeta>.json``, que a partir de ese momento oculta por completo el
+  ``context.example.json`` del flow: si una versión posterior añade una clave
+  nueva al ejemplo, el flow configurado no la verá.
+
+Cuidado adicional: ``allowed_actions`` y ``allowed_paths`` se convierten con
+``if raw.get(...)``, de modo que una **lista vacía** (falsy) pasa a ``None``, es
+decir, a política permisiva. Escribir ``"allowed_actions": []`` con intención de
+bloquear todo produce el efecto contrario.
+"""
 from __future__ import annotations
 
 import json

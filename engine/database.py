@@ -1,3 +1,29 @@
+"""Toda la persistencia SQLite del sistema: siete tablas y su SQL.
+
+Es el único módulo que abre una conexión a ``db/runs.db``. No hay ORM: el SQL se
+escribe a mano y **todas** las consultas son parametrizadas con ``?``.
+
+Decisiones de diseño y sus consecuencias:
+
+* **Una conexión nueva por operación**, cerrada siempre en el ``finally``. Evita
+  el clásico ``ProgrammingError`` por compartir conexiones entre hilos, a costa
+  de abrir el archivo en cada consulta.
+* **No hay ninguna ``FOREIGN KEY``.** Las relaciones entre ``flows``, ``runs``,
+  ``steps`` y ``events`` las mantiene este módulo, no la base. Borrar una corrida
+  a mano **no** borra sus pasos ni sus eventos: hay que limpiarlos tabla por
+  tabla.
+* **No hay índices explícitos**, solo los implícitos de las claves primarias.
+  ``list_runs(flow_id=...)``, ``get_steps`` y ``get_events`` hacen escaneo
+  completo. Irrelevante con cientos de corridas, no con decenas de miles.
+* **No hay retención ni purga.** Las tablas crecen indefinidamente.
+* ``acquire_run_lock`` se apoya en la clave primaria ``folder`` de ``run_locks``:
+  el segundo insert viola la restricción y se traduce en ``False``. Elegante,
+  pero **solo lo usa el scheduler**: las rutas del panel no adquieren el lock.
+* ``set_flow_config`` escribe en **dos medios** —archivo y tabla— sin transacción
+  que abarque ambos.
+* Toda la maquinaria de migración es ``_ensure_column``, suficiente para añadir
+  una columna e insuficiente para un cambio de tipo o un renombrado.
+"""
 from __future__ import annotations
 
 import json

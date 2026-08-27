@@ -1,3 +1,15 @@
+"""Snapshot completo del estado de una corrida en un archivo JSON.
+
+Escribe ``state/<flow_id>_<run_id>.json`` con el estado íntegro: definición,
+contexto, todos los pasos con sus resultados, la ruta recorrida y los outputs
+detectados. Es un **superconjunto** de lo que guarda la tabla ``runs``, y sirve
+para reconstruir una corrida si la base de datos se pierde.
+
+El orquestador lo invoca tras **cada** paso, de modo que el archivo se reescribe
+entero cada vez. Para un flow de 20 pasos con contexto grande son 20 escrituras
+completas. El beneficio es que una corrida interrumpida por un corte deja rastro
+de hasta dónde llegó.
+"""
 from __future__ import annotations
 
 import json

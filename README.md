@@ -323,6 +323,43 @@ Toda acción third-party va pinned a SHA — política completa en [SECURITY.md]
 | [🛡️ SECURITY.md](SECURITY.md) | Política de reporte de vulnerabilidades |
 | [📜 LICENSE](LICENSE) | MIT |
 
+### Documentación del sistema
+
+Análisis completo del repositorio en **20 documentos**, escritos recorriendo el código fuente: cada afirmación apunta a un archivo, una función o un comando, y lo no comprobable queda marcado como inferencia o pendiente de validación. Índice general en **[docs/system-documentation/](docs/system-documentation/README.md)**.
+
+| Documento | Para qué |
+| --- | --- |
+| [📇 Índice general](docs/system-documentation/README.md) | Portada, convenciones y lista de pendientes de validar |
+| [🔎 Descripción general](docs/system-documentation/01-system-overview.md) | Qué es, qué resuelve, límites — incluye una sección para lectores no técnicos |
+| [⚙️ Instalación y ejecución](docs/system-documentation/02-installation-and-execution.md) | Requisitos, las tres vías de instalación, comandos verificados |
+| [🏛️ Arquitectura](docs/system-documentation/03-architecture.md) | Capas, patrones, concurrencia y errores, con diagramas Mermaid |
+| [🗺️ Mapa del código](docs/system-documentation/04-code-map.md) | Inventario de cada archivo con su estado: activo, sin uso, muerto |
+| [📖 Referencia técnica](docs/system-documentation/05-technical-reference.md) | Las 36 acciones, los endpoints, los comandos y los errores |
+| [🔬 Explicación profunda](docs/system-documentation/06-deep-code-explanation.md) | El motor módulo a módulo, con sus casos límite |
+| [💾 Base de datos](docs/system-documentation/07-database.md) | Las 7 tablas SQLite, diccionario de datos y ERD |
+| [🔀 Flujo de datos](docs/system-documentation/08-data-flow.md) | De dónde vienen los datos, dónde acaban y dónde se pierden |
+| [🔌 APIs e integraciones](docs/system-documentation/09-apis-and-integrations.md) | Endpoints, webhooks, Playwright, OCR y la IA opcional sin uso |
+| [🎛️ Configuración](docs/system-documentation/10-configuration.md) | Contextos, variables de entorno y qué pasa si algo está mal |
+| [🛡️ Seguridad](docs/system-documentation/11-security.md) | Controles presentes **y ausentes**, medidos flow por flow |
+| [🧪 Pruebas y calidad](docs/system-documentation/12-testing-and-quality.md) | 150 tests, cobertura medida por módulo y huecos priorizados |
+| [🚀 Despliegue y operación](docs/system-documentation/13-deployment-and-operations.md) | CI/CD, empaquetado, logs, respaldo y rollback |
+| [🩺 Solución de problemas](docs/system-documentation/14-troubleshooting.md) | Síntoma → causa → diagnóstico → solución → **riesgo** |
+| [⚠️ Riesgos y deuda técnica](docs/system-documentation/15-risks-and-technical-debt.md) | 27 hallazgos clasificados. Informativo: no se corrigió ninguno |
+| [📗 Glosario](docs/system-documentation/16-glossary.md) | Términos del dominio en lenguaje claro |
+| [📊 Resumen ejecutivo](docs/system-documentation/17-executive-summary.md) | Para decisión, con esfuerzo cuantificado |
+| [🧭 Guía para nuevo desarrollador](docs/system-documentation/18-new-developer-guide.md) | Itinerario de incorporación y tareas iniciales reales |
+| [🔗 Matriz de trazabilidad](docs/system-documentation/19-traceability-matrix.md) | Funcionalidad → módulo → función → persistencia → prueba |
+
+**Versión PDF** de los 20 documentos, más un consolidado, en **[docs/system-documentation/pdf/](docs/system-documentation/pdf/)**. Los Markdown son la fuente única; los PDF se regeneran con:
+
+```bash
+python scripts/build_docs_pdf.py            # los 20 + el consolidado
+python scripts/build_docs_pdf.py --only 03  # solo uno, para iterar
+python scripts/build_docs_pdf.py --check    # comprueba dependencias
+```
+
+Requiere `markdown` y `xhtml2pdf`; con `@mermaid-js/mermaid-cli` instalado los diagramas se rasterizan a PNG, y sin él degradan a código fuente **con aviso explícito**.
+
 ---
 
 ## 🗃️ Estructura del repo

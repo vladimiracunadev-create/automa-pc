@@ -1,3 +1,25 @@
+"""Captura de píxeles del escritorio: pantalla completa, región y ventana activa.
+
+Tres acciones con **estrategia de respaldo en dos niveles**: primero ``mss`` (más
+rápido y sin dependencias de sistema), y si falla, ``PIL.ImageGrab``. El campo
+``method`` del resultado dice cuál se usó, de modo que un problema de captura se
+puede diagnosticar desde el histórico sin reproducirlo.
+
+Si ambas fallan, se levanta ``RuntimeError`` con un mensaje que apunta a la causa
+real (ausencia de escritorio gráfico), no un error opaco de la biblioteca.
+
+Formato del ``bbox`` (ver :func:`_resolve_bbox`):
+
+* Acepta ``{left, top, width, height}`` o ``{left, top, right, bottom}``.
+* Un ``left`` o ``top`` **negativo** significa «relativo al borde opuesto»,
+  estilo CSS. Es lo que permite al flow 19 capturar la barra de tareas con
+  ``{"left": 0, "top": -48, "width": 99999, "height": 48}``: el ancho desmedido
+  se recorta solo al borde del monitor.
+
+Limitación conocida: las tres acciones trabajan sobre el **monitor primario**
+(``sct.monitors[1]``). Una ventana en un segundo monitor produciría un recorte
+incorrecto.
+"""
 from __future__ import annotations
 
 from pathlib import Path

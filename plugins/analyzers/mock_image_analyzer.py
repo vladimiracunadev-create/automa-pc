@@ -1,3 +1,15 @@
+"""Analizador heurístico local: brillo medio, RGB medio y estado visual.
+
+Es el analizador **por defecto** de ``vision.analyze_image`` y el que usa el flow
+01. No hay nada de inteligencia artificial aquí: abre la imagen con Pillow,
+promedia los canales y clasifica el resultado en ``oscuro`` / ``medio`` /
+``claro`` con dos umbrales fijos (60 y 180 sobre 255).
+
+Su valor no es la precisión sino el desacoplamiento: da a un flow un dato
+utilizable sobre la captura sin depender de nada externo, y deja el hueco para
+que otro analizador —OCR, visión por computador local, o un proveedor externo—
+ocupe su lugar cambiando una cadena en el manifest.
+"""
 from __future__ import annotations
 
 from pathlib import Path

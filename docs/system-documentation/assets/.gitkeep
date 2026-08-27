@@ -1,0 +1,10 @@
+Recursos gráficos de la documentación de sistema.
+
+Actualmente vacío a propósito: los diagramas se declaran como código Mermaid
+dentro de los propios .md y `scripts/build_docs_pdf.py` los rasteriza al generar
+los PDF, cacheándolos en `.tmp/mermaid-cache/` (ignorado por git). Las capturas
+del producto viven en `docs/manual_screenshots/` y la portada en `docs/assets/`.
+
+Este archivo existe para que el directorio sobreviva al clon: el verificador de
+enlaces de `.github/workflows/markdown-docs.yml` comprueba que la ruta relativa
+`assets/` referida desde README.md resuelva.

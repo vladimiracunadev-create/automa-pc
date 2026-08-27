@@ -1,3 +1,19 @@
+"""Lectura del catálogo de flows desde el disco, enriquecida con la base.
+
+Une lo que hay en ``flows/`` (la verdad sobre qué casos existen) con lo que hay
+en SQLite (configuración guardada, horario, corridas). El panel y el CLI leen
+siempre de aquí.
+
+Detalle importante: **el catálogo lo define el disco, no la tabla ``flows``**.
+``list_flows`` recorre las carpetas; la tabla es un espejo que ``sync_flows``
+actualiza al arrancar y que nunca borra filas — un flow eliminado del disco deja
+su fila huérfana.
+
+Este módulo define su propio ``root_dir`` local en lugar de importar el de
+:mod:`engine.paths`. Ambos devuelven lo mismo en desarrollo, pero **el de aquí
+ignora ``AUTOMA_ROOT`` y ``sys._MEIPASS``**, así que en el binario empaquetado
+podrían divergir.
+"""
 from __future__ import annotations
 
 import json

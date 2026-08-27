@@ -1,3 +1,24 @@
+"""Acciones de sistema de archivos: inventariar, leer, clasificar y escribir.
+
+Siete acciones sin ninguna dependencia externa, y por eso las más usadas del
+catálogo: ``filesystem.write_json`` aparece en 16 de los 27 flows como paso final
+que persiste el reporte.
+
+Contrato común: todas devuelven un ``dict`` serializable a JSON, crean el
+directorio padre cuando escriben, y levantan ``FileNotFoundError`` si la ruta de
+entrada no existe.
+
+Detalles no obvios que conviene conocer al escribir un flow:
+
+* ``list_directory`` devuelve **solo archivos**, nunca subcarpetas.
+* ``write_json`` **sobrescribe sin avisar** si el archivo ya existe.
+* ``move_file`` con ``overwrite=True`` hace ``unlink()`` del destino **antes** de
+  mover: si el ``shutil.move`` falla después, el destino ya se perdió.
+* ``summarize_text_folder`` corta en ``max_files`` (10 por defecto) y solo acepta
+  cinco extensiones (``.txt``, ``.md``, ``.log``, ``.csv``, ``.json``). **No
+  declara cuántos archivos quedaron fuera**: es la única cota del sistema que no
+  se reporta, a diferencia de los ``*_truncated`` del resto de acciones.
+"""
 from __future__ import annotations
 
 import json

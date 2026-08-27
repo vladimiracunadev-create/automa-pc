@@ -1,3 +1,12 @@
+"""Analizador de metadatos: dimensiones, modo de color y huella SHA-256.
+
+El más barato de los tres: no interpreta la imagen, solo la describe. El
+``sha256`` sobre los bytes del archivo permite comparar dos capturas y saber si
+son idénticas sin guardarlas ambas.
+
+Registrado en ``actions/vision.py::ANALYZERS`` como ``metadata``, pero **ningún
+flow del catálogo lo pide**: está disponible para quien escriba uno nuevo.
+"""
 from __future__ import annotations
 
 import hashlib

@@ -1,3 +1,23 @@
+"""Interfaz de línea de comandos: ``automa list``, ``run`` y ``scheduler``.
+
+Entry point del comando ``automa`` declarado en ``pyproject.toml``. Es la vía de
+uso sin panel: útil para probar un flow recién escrito, para integrarlo en un
+script o para dejar el scheduler corriendo sin ventana.
+
+.. warning::
+
+   **Defecto conocido en Windows.** :func:`main` termina imprimiendo
+   ``json.dumps(..., ensure_ascii=False)``. Varios manifests contienen caracteres
+   no representables en la página de códigos ``cp1252`` de la consola de Windows
+   (por ejemplo ``→``), así que tanto ``list`` como ``run`` terminan con
+   ``UnicodeEncodeError``.
+
+   Con ``run``, **el flow se ejecuta completo y correctamente** —la corrida queda
+   persistida y el reporte escrito— y el error salta después, solo al volcar el
+   JSON a la consola. No se pierde trabajo, pero el código de salida es de error.
+
+   Solución para el usuario: ``PYTHONIOENCODING=utf-8`` antes del comando.
+"""
 from __future__ import annotations
 
 import argparse

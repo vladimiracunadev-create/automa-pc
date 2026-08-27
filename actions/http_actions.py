@@ -1,3 +1,25 @@
+"""Acciones HTTP: descargar una URL y verificar el estado de una lista de enlaces.
+
+Dos acciones construidas sobre ``requests``, con criterios opuestos ante el
+error, y la diferencia es intencional:
+
+* :func:`fetch_url` hace ``raise_for_status()``: un 404 se convierte en excepción
+  y el paso falla. Se usa cuando el contenido es imprescindible.
+* :func:`check_urls` **nunca falla por un enlace roto**: el estado de cada URL es
+  precisamente el dato que produce. Un enlace caído se registra y se sigue.
+
+:func:`check_urls` verifica **en orden de entrada** (determinista, sin
+paralelismo) y trata tres familias de esquema:
+
+* ``http``/``https`` → ``HEAD`` con redirects; si el servidor responde 405 o 501,
+  reintenta con ``GET`` en modo ``stream`` y lo cierra sin descargar el cuerpo.
+* ``file://`` → comprueba existencia en disco. Es lo que permite auditar los
+  enlaces de las páginas de demo del repositorio sin salir a la red.
+* Cualquier otro (``mailto:``, ``tel:``) → ``skipped``, no cuenta como roto.
+
+Cota explícita y **declarada**: se revisan a lo sumo ``max_urls`` y, si la lista
+era más larga, ``truncated=True`` lo deja registrado. Nunca truncado silencioso.
+"""
 from __future__ import annotations
 
 import time

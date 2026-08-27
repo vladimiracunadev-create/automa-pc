@@ -1,3 +1,25 @@
+"""Resolución de las dos raíces del sistema: la de lectura y la de escritura.
+
+Separar ambas es la decisión de despliegue más importante del proyecto, y nació
+de un fallo real: instalado bajo ``Program Files`` (de solo lectura para usuarios
+sin admin), ``init_db()`` levantaba ``PermissionError [WinError 5]`` al intentar
+crear su base de datos dentro del propio bundle.
+
+* :func:`root_dir` — dónde viven ``flows/`` y ``schemas/``. En el binario
+  empaquetado apunta a ``sys._MEIPASS``, la carpeta que PyInstaller extrae al
+  arrancar.
+* :func:`data_dir` — dónde viven ``db/``, ``state/``, ``logs/``, ``configs/``,
+  ``secrets/`` y ``output/``. En modo desarrollo coincide con :func:`root_dir`;
+  congelado apunta a ``%LOCALAPPDATA%\\Automa`` en Windows o a
+  ``$XDG_DATA_HOME/automa-pc`` en el resto.
+
+Ambas admiten override explícito (``AUTOMA_ROOT`` y ``AUTOMA_DATA_ROOT``), que es
+lo que usan las pruebas y el entry point del bundle.
+
+Nota para quien empaquete: ``engine/catalog.py`` define su **propia** versión de
+``root_dir`` que ignora ``AUTOMA_ROOT`` y ``sys._MEIPASS``. En desarrollo ambas
+coinciden; en el binario no tiene por qué.
+"""
 from __future__ import annotations
 
 import os

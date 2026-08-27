@@ -1,3 +1,35 @@
+"""Acciones sobre el estado y el shell del equipo.
+
+Seis acciones que van de lo inocuo (``wait_seconds``) a lo que exige más cuidado
+del repositorio (``run_powershell``).
+
+**Sobre :func:`run_powershell` — la acción de mayor superficie.** Aplica dos
+controles en cascada, ambos *antes* de invocar PowerShell: rechazo de tokens de
+encadenamiento y redirección (``;``, ``|``, ``&``, backtick, ``>``, ``<``,
+``$(``, ``$_``), y allowlist sobre la **primera palabra** del comando. Se ejecuta
+con ``shell=False`` y argumentos como lista.
+
+.. warning::
+
+   El parámetro ``allowlist`` es sobrescribible desde los ``params`` del
+   manifest. Un flow que declare ``"allowlist": ["Remove-Item"]`` obtiene
+   exactamente eso, y los tokens prohibidos no impiden un comando destructivo de
+   una sola palabra. La seguridad de esta acción depende, por tanto, de la
+   revisión de código de los manifests, no de un control del motor — que es
+   exactamente el modelo de amenaza que documenta ``.github/workflows/security.yml``.
+
+**Sobre :func:`read_clipboard`:** nunca lanza excepción. Si falta ``pyperclip`` o
+no hay backend de portapapeles, devuelve ``available: False`` con la razón
+legible, para que un flow con rama de recuperación pueda seguir su camino.
+
+**Sobre :func:`top_processes`:** los procesos que lanzan ``NoSuchProcess`` o
+``AccessDenied`` se saltan en silencio, así que ``total_seen`` puede ser menor que
+el número real de procesos del equipo. Y cualquier ``sort_by`` distinto de
+``"cpu"`` ordena por memoria, sin error ni aviso.
+
+**Sobre :func:`snapshot_system`:** ``psutil.cpu_percent(interval=0.2)`` **bloquea
+200 ms** en cada llamada.
+"""
 from __future__ import annotations
 
 import platform

@@ -1,3 +1,34 @@
+"""Acciones de análisis de imagen, sobre analizadores intercambiables.
+
+Fachada entre el manifest y los analizadores de :mod:`plugins.analyzers`. El
+diccionario ``ANALYZERS`` implementa el patrón Strategy: el flow elige el
+analizador por nombre (``mock``, ``metadata``, ``ocr``) y este módulo despacha.
+
+``ocr_image`` **no falla cuando falta el OCR**: :class:`OCRImageAnalyzer` detecta
+la ausencia de ``pytesseract`` o del binario ``tesseract`` y devuelve un payload
+válido con ``status: "unavailable"``, la razón concreta y las instrucciones de
+instalación por sistema operativo. Es lo que permite que un flow con rama de
+recuperación siga su camino alternativo en vez de morir en el primer paso.
+
+.. note::
+
+   :func:`inspect_screen_target` es el **único punto del repositorio desde el que
+   se puede alcanzar** :class:`~plugins.analyzers.vision_model_analyzer.VisionModelAnalyzer`,
+   es decir, un proveedor de visión multimodal externo. Ningún flow del catálogo
+   la usa, verificable con ``grep -l inspect_screen_target flows/*/manifest.json``
+   (sin resultados). Con el catálogo tal y como se distribuye, el sistema es
+   determinista de extremo a extremo y no puede provocar una llamada a un modelo
+   de IA.
+
+   Si algún día se escribe un flow que la use con ``vision_provider`` distinto de
+   ``mock``, tenga presente que la imagen enviada es una captura del escritorio
+   codificada íntegra, y que ``vision_api_key`` como parámetro del manifest
+   quedaría en claro en la columna ``steps.params_json``. Use siempre
+   ``vision_api_key_env`` con el **nombre** de una variable de entorno.
+
+Los errores de cada fuente en :func:`inspect_screen_target` no abortan: se
+acumulan en ``diagnostics`` para que el resultado explique qué se intentó.
+"""
 from __future__ import annotations
 
 from pathlib import Path

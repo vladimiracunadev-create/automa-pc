@@ -1,3 +1,22 @@
+"""Motor de condiciones del manifest: los ``when`` de pasos y transiciones.
+
+Trece operadores más los combinadores ``all`` / ``any`` / ``not``, evaluados
+sobre el contexto de la corrida. Es lo que permite que un flow tenga ramas sin
+escribir una línea de Python.
+
+Trampas conocidas de este módulo:
+
+* ``get_path`` navega diccionarios anidados por notación de punto, pero **no
+  soporta índices de lista**: ``steps.0.status`` devuelve ``None``.
+* Una condición vacía o ``None`` devuelve ``True``. Es lo que hace que un paso
+  sin ``when`` se ejecute siempre, y también que ``{"all": []}`` deje pasar todo.
+* ``contains`` normaliza **ambos** lados a minúsculas: es una búsqueda insensible
+  a mayúsculas por diseño. El operador homónimo de :mod:`actions.rules` **sí**
+  distingue mayúsculas — son dos motores distintos.
+* Los comparadores de orden protegen contra ``None``, pero no contra tipos
+  incompatibles: un umbral escrito como texto (``"80"``) frente a un número
+  levanta ``TypeError`` en ejecución.
+"""
 from __future__ import annotations
 
 import re

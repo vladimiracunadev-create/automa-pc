@@ -1,3 +1,36 @@
+"""Motor de ejecución: convierte un manifest declarativo en una corrida trazable.
+
+Es el único módulo que conoce a la vez el contrato del flow, la política de
+sandbox, el registro de acciones y los tres almacenes de persistencia. Todo lo
+demás del sistema es o bien una fuente de disparo (panel, CLI, scheduler,
+webhook) o bien una pieza que este bucle usa.
+
+Orden de los controles antes de cada paso, y **el orden importa**:
+
+1. ``assert_secrets_present`` — una sola vez, al arrancar la corrida.
+2. ``assert_action_allowed`` — barato, va antes de renderizar.
+3. ``render_value`` sobre los ``params``.
+4. ``assert_paths_allowed`` — **después** de renderizar: un placeholder sin
+   resolver no se puede validar como ruta.
+5. Comprobación de ``max_runtime_seconds``.
+
+Advertencias para quien modifique este archivo:
+
+* ``max_runtime_seconds`` se comprueba **entre** pasos. Una acción que se cuelga
+  dentro no se interrumpe: es un control de arranque de paso, no un timeout.
+* ``render_value`` se llama **una vez por paso**, fuera del bucle de reintentos.
+  Un ``{now}`` en un nombre de archivo no cambia entre intentos, y eso es
+  intencional.
+* La recuperación ante fallo se detecta comparando el destino de la transición
+  ``on: "failure"`` con ``_default_next``. Si coinciden, el motor NO lo considera
+  rama de recuperación y la corrida se marca ``failed``.
+* ``self.state['context']`` es **la misma referencia** que ``self.context``, no
+  una copia. El snapshot persistido refleja siempre el contexto vivo, a cambio de
+  que todo él acabe en la columna ``context_json`` de la tabla ``runs``.
+* ``_persist()`` se llama tras **cada** paso: recorre el estado buscando outputs,
+  reescribe el JSON completo y hace un upsert en SQLite. Barato para flows
+  cortos, caro para flows largos con contexto grande.
+"""
 from __future__ import annotations
 
 from datetime import datetime, timezone

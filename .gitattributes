@@ -1,0 +1,4 @@
+# Los PDF de la documentación son binarios: ninguna normalización de finales de
+# línea debe tocarlos, o el archivo queda corrupto al clonar en otra plataforma.
+*.pdf binary
+*.png binary

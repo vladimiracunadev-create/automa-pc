@@ -1,3 +1,33 @@
+"""Sustitución de placeholders en los ``params`` de un paso.
+
+Resuelve ``{clave}`` y ``{objeto.campo}`` contra el contexto de la corrida,
+aplanado previamente para que las claves con punto funcionen.
+
+La decisión central del módulo son **dos modos de sustitución**:
+
+* **Placeholder exacto** — la cadena entera es un único placeholder. Se devuelve
+  el valor **con su tipo original**: un booleano sigue siendo booleano, un dict
+  sigue siendo dict, y ``None`` se convierte en ``null`` JSON. Por eso
+  ``"headless": "{{ headless }}"`` llega a la acción como ``False`` y no como la
+  cadena ``"False"``.
+* **Placeholder embebido** — la cadena contiene texto alrededor. Se sustituye
+  textualmente y **lo que no existe queda literal**, sin error.
+
+Por qué no se usa ``str.format_map``, que sería lo obvio:
+
+1. Interpretaría el punto como acceso a atributo, así que
+   ``"{content.content_hash}"`` lanzaría ``AttributeError`` sobre un dict.
+2. Reventaría ante una llave que no es placeholder (JSON embebido en un comando).
+
+El centinela ``_MISSING`` existe para distinguir «la clave no está» de «la clave
+está y vale ``None``»; sin él, un placeholder que resuelve a ``None`` caería al
+render de string y produciría el texto ``"None"``.
+
+``{now}`` se inyecta en cada llamada: dentro de un mismo paso todos los ``{now}``
+coinciden, pero **entre pasos pueden diferir** si cruzan el cambio de segundo.
+Los flows del repositorio lo evitan pasando la ruta por el contexto con
+``save_as`` en lugar de recomputar ``{now}``.
+"""
 from __future__ import annotations
 
 import re

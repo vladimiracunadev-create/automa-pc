@@ -1,3 +1,30 @@
+"""Acciones que actúan sobre la sesión de escritorio: teclado, ratón y procesos.
+
+Es el bloque de **mayor riesgo del repositorio**: estas funciones mueven el
+teclado y el ratón reales del operador y lanzan procesos en su sesión. Léase
+entero antes de modificar nada.
+
+**``dry_run`` es el mecanismo que hace testeable lo intestable.** Con
+``dry_run=True`` la función devuelve exactamente el payload que habría producido,
+con ``sent``/``typed``/``clicked``/``launched`` en ``False``, sin tocar el
+sistema. Es lo que permite que ``tests/test_actions_basic.py`` las ejercite en la
+CI sin efectos, y lo que un operador debe usar la primera vez que prueba un flow
+de UI. Todos los flows de UI del catálogo exponen ``dry_run`` en su
+``context.example.json``.
+
+**``shell=True`` está prohibido a propósito** en :func:`launch_process`, para
+cerrar el vector de command injection (CWE-78). El comando se tokeniza con
+``shlex.split`` y se lanza con ``shell=False``. No reactive esa rama: si necesita
+un binario con argumentos complejos, páselo como cadena tokenizable.
+
+Nota para Windows: ``shlex`` usa reglas POSIX, así que una ruta con contrabarras
+(``C:\\Users\\ejemplo``) puede tokenizarse de forma inesperada. Los flows del
+repositorio pasan rutas con barra normal.
+
+``pyautogui`` se importa **dentro** de la función (:func:`_import_pyautogui`)
+para que el módulo siga siendo importable en un entorno sin escritorio gráfico —
+por ejemplo, la CI.
+"""
 from __future__ import annotations
 
 import shlex
